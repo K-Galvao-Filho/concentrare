@@ -8,9 +8,16 @@ const FILES_TO_CACHE = [
     'assets/sounds/notification.mp3',
     'assets/sounds/digital.mp3',
     'assets/sounds/bell.mp3',
+    'assets/sounds/ambient/tick-tock.mp3',
+    'assets/sounds/ambient/gentle-rain.mp3',
+    'assets/sounds/ambient/heavy-rain.mp3',
+    'assets/sounds/ambient/night-forest.mp3',
+    'assets/sounds/ambient/library.mp3',
+    'assets/sounds/ambient/brown-noise.mp3',
     'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
     'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css',
     'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js'
+    
 ];
 
 self.addEventListener('install', (event) => {

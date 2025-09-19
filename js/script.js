@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- ELEMENTOS DO DOM ---
-    const pomodoroWidget = document.getElementById('pomodoro-container'); // Corrigido: Alvo para o efeito de flash
+    const pomodoroWidget = document.getElementById('pomodoro-container');
     const timerDisplay = document.getElementById('timer-display');
     const modeButtons = document.querySelectorAll('.mode-btn');
     const startBtn = document.getElementById('start-btn');
@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskList = document.getElementById('task-list');
     const taskSummary = document.getElementById('task-summary');
     const alarmSoundSelect = document.getElementById('alarm-sound-select');
+    const ambientSoundSelect = document.getElementById('ambient-sound-select');
     const statsModal = new bootstrap.Modal(document.getElementById('statsModal'));
     const statsToday = document.getElementById('stats-today');
     const statsTotal = document.getElementById('stats-total');
@@ -54,7 +55,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let settings = {
         pomodoro: 25, shortBreak: 5, longBreak: 15,
-        pomodorosPerCycle: 4, totalCycles: 1, alarmSound: 'notification1'
+        pomodorosPerCycle: 4, totalCycles: 1, 
+        alarmSound: 'notification1',
+        ambientSound: 'none'
     };
 
     // --- FUNÇÕES ---
@@ -71,6 +74,13 @@ document.addEventListener('DOMContentLoaded', () => {
         isAudioUnlocked = true;
         console.log("Contexto de áudio destravado.");
     }
+    
+    function stopAllAmbientSounds() {
+        document.querySelectorAll('.ambient-sound').forEach(sound => {
+            sound.pause();
+            sound.currentTime = 0;
+        });
+    }
 
     function handleTimerEnd() {
         pauseTimer();
@@ -79,10 +89,10 @@ document.addEventListener('DOMContentLoaded', () => {
             alarm.currentTime = 0;
             const playPromise = alarm.play();
             if (playPromise !== undefined) {
-                playPromise.catch(error => console.error("Erro ao tocar o som:", error));
+                playPromise.catch(error => console.error("Erro ao tocar o som de alarme:", error));
             }
         }
-        pomodoroWidget.classList.add('timer-ended-flash'); // Corrigido
+        pomodoroWidget.classList.add('timer-ended-flash');
 
         if (currentMode === 'pomodoro') {
             pomodorosCompletedInCycle++;
@@ -171,6 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
         settings.pomodorosPerCycle = parseInt(inputs.pomodorosPerCycle.value);
         settings.totalCycles = parseInt(inputs.totalCycles.value);
         settings.alarmSound = alarmSoundSelect.value;
+        settings.ambientSound = ambientSoundSelect.value;
         localStorage.setItem('pomodoroSettings', JSON.stringify(settings));
         settingsModal.hide();
         resetApp();
@@ -185,6 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
         inputs.pomodorosPerCycle.value = settings.pomodorosPerCycle;
         inputs.totalCycles.value = settings.totalCycles;
         alarmSoundSelect.value = settings.alarmSound;
+        ambientSoundSelect.value = settings.ambientSound;
     }
 
     function updateTimerDisplay() {
@@ -202,6 +214,14 @@ document.addEventListener('DOMContentLoaded', () => {
         updateControlButtons();
         favicon.href = favicons.playing;
         announce("Timer iniciado.");
+        
+        if (currentMode === 'pomodoro' && settings.ambientSound !== 'none') {
+            const ambientSound = document.getElementById(settings.ambientSound);
+            if (ambientSound) {
+                ambientSound.play().catch(e => console.error("Erro ao tocar som ambiente:", e));
+            }
+        }
+
         const totalTime = settings[currentMode] * 60;
         timer = setInterval(() => {
             timeLeft--;
@@ -218,9 +238,14 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(timer);
         if (timeLeft > 0) { favicon.href = favicons.paused; }
         announce("Timer pausado.");
+        stopAllAmbientSounds();
     }
 
-    function stopTimer() { pauseTimer(); favicon.href = favicons.default; switchMode(currentMode); }
+    function stopTimer() {
+        pauseTimer();
+        favicon.href = favicons.default;
+        switchMode(currentMode);
+    }
 
     function switchMode(mode) {
         pauseTimer();
@@ -263,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
         themeToggleBtn.addEventListener('click', toggleTheme);
         document.addEventListener('keydown', handleKeyPress);
         document.getElementById('statsModal').addEventListener('show.bs.modal', renderStats);
-        pomodoroWidget.addEventListener('animationend', () => pomodoroWidget.classList.remove('timer-ended-flash')); // Corrigido
+        pomodoroWidget.addEventListener('animationend', () => pomodoroWidget.classList.remove('timer-ended-flash'));
 
         modeButtons.forEach(btn => btn.addEventListener('click', () => switchMode(btn.dataset.mode)));
         
