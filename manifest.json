@@ -1,21 +1,39 @@
 {
-    "name": "Pomodoro Produtivo",
-    "short_name": "Pomodoro",
-    "description": "Um temporizador Pomodoro para ajudar a focar e a ser mais produtivo.",
+    "name": "CONCENTRARE - Sistema Pomodoro",
+    "short_name": "Concentrare",
+    "description": "Um dashboard de produtividade completo, baseado na técnica Pomodoro, projetado para maximizar o foco e organizar suas tarefas.",
+    "lang": "pt-BR",
+    "dir": "ltr",
     "start_url": ".",
+    "id": "/?v=1",
+    "scope": "/",
     "display": "standalone",
-    "background_color": "#B84A48",
-    "theme_color": "#B84A48",
+    "orientation": "portrait-primary",
+    "background_color": "#FDFBFA",
+    "theme_color": "#79A37D",
+    "categories": [
+        "productivity",
+        "utilities",
+        "lifestyle"
+    ],
     "icons": [
         {
             "src": "assets/images/icon-192x192.png",
             "type": "image/png",
-            "sizes": "192x192"
+            "sizes": "192x192",
+            "purpose": "any"
         },
         {
             "src": "assets/images/icon-512x512.png",
             "type": "image/png",
-            "sizes": "512x512"
+            "sizes": "512x512",
+            "purpose": "any"
+        },
+        {
+            "src": "assets/images/icon-maskable-512x512.png",
+            "type": "image/png",
+            "sizes": "512x512",
+            "purpose": "maskable"
         }
     ]
 }
