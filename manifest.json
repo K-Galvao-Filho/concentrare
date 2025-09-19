@@ -1,0 +1,21 @@
+{
+    "name": "Pomodoro Produtivo",
+    "short_name": "Pomodoro",
+    "description": "Um temporizador Pomodoro para ajudar a focar e a ser mais produtivo.",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#B84A48",
+    "theme_color": "#B84A48",
+    "icons": [
+        {
+            "src": "assets/images/icon-192x192.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "assets/images/icon-512x512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ]
+}
