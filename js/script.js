@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // --- ELEMENTOS DO DOM ---
-    const appContainer = document.getElementById('app-container');
+    const pomodoroWidget = document.getElementById('pomodoro-container'); // Corrigido: Alvo para o efeito de flash
     const timerDisplay = document.getElementById('timer-display');
     const modeButtons = document.querySelectorAll('.mode-btn');
     const startBtn = document.getElementById('start-btn');
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 playPromise.catch(error => console.error("Erro ao tocar o som:", error));
             }
         }
-        appContainer.classList.add('timer-ended-flash');
+        pomodoroWidget.classList.add('timer-ended-flash'); // Corrigido
 
         if (currentMode === 'pomodoro') {
             pomodorosCompletedInCycle++;
@@ -263,7 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
         themeToggleBtn.addEventListener('click', toggleTheme);
         document.addEventListener('keydown', handleKeyPress);
         document.getElementById('statsModal').addEventListener('show.bs.modal', renderStats);
-        appContainer.addEventListener('animationend', () => appContainer.classList.remove('timer-ended-flash'));
+        pomodoroWidget.addEventListener('animationend', () => pomodoroWidget.classList.remove('timer-ended-flash')); // Corrigido
 
         modeButtons.forEach(btn => btn.addEventListener('click', () => switchMode(btn.dataset.mode)));
         
