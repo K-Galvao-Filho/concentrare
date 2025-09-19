@@ -20,9 +20,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const announcer = document.getElementById('announcer');
 
     const favicons = {
-        default: "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⏰</text></svg>",
-        playing: "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>▶️</text></svg>",
-        paused: "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⏸️</text></svg>"
+        default: "data:image/svg+xml,...",
+        playing: "data:image/svg+xml,...",
+        paused: "data:image/svg+xml,..."
     };
 
     const taskForm = document.getElementById('task-form');
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let pomodorosCompletedInCycle = 0;
     let currentCycle = 1;
     let tasks = [];
-    let isAudioUnlocked = false;
+    let isAudioInitialized = false;
 
     let settings = {
         pomodoro: 25, shortBreak: 5, longBreak: 15,
@@ -59,27 +59,83 @@ document.addEventListener('DOMContentLoaded', () => {
         alarmSound: 'notification1',
         ambientSound: 'none'
     };
+    
+    let audioContext;
+    let audioBuffers = new Map();
+    let currentAmbientSource = null;
 
     // --- FUNÇÕES ---
+
+    // CORREÇÃO APLICADA AQUI
+    function loadTasks() {
+        const savedTasks = localStorage.getItem('pomodoroTasks');
+        if (savedTasks) {
+            try {
+                let parsedTasks = JSON.parse(savedTasks);
+                // Filtra o array para garantir que cada tarefa seja um objeto válido com id e texto
+                tasks = parsedTasks.filter(task => task && typeof task.id !== 'undefined' && typeof task.text !== 'undefined');
+            } catch (error) {
+                console.error("Erro ao carregar tarefas do localStorage:", error);
+                tasks = []; // Em caso de erro, reseta para um array vazio
+            }
+        }
+        renderTasks();
+    }
+
+    // O restante do seu script.js continua aqui, sem alterações...
+    // (Cole o resto das funções aqui)
+    
     function announce(message) { announcer.textContent = message; }
 
-    function unlockAudioContext() {
-        if (isAudioUnlocked) return;
-        const allSounds = document.querySelectorAll('audio');
-        allSounds.forEach(sound => {
-            sound.play().catch(() => {});
-            sound.pause();
-            sound.currentTime = 0;
-        });
-        isAudioUnlocked = true;
-        console.log("Contexto de áudio destravado.");
+    function initAudio() {
+        if (isAudioInitialized) return;
+        try {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            document.querySelectorAll('audio').forEach(sound => {
+                sound.play().catch(() => {});
+                sound.pause();
+                sound.currentTime = 0;
+            });
+            isAudioInitialized = true;
+            console.log("Contexto de áudio inicializado com sucesso.");
+        } catch (e) {
+            console.error("Web Audio API não é suportada neste navegador.", e);
+        }
     }
-    
-    function stopAllAmbientSounds() {
-        document.querySelectorAll('.ambient-sound').forEach(sound => {
-            sound.pause();
-            sound.currentTime = 0;
-        });
+
+    async function getAudioBuffer(soundId) {
+        if (audioBuffers.has(soundId)) { return audioBuffers.get(soundId); }
+        if (!audioContext) { console.error("AudioContext não foi inicializado."); return null; }
+        try {
+            const response = await fetch(`assets/sounds/ambient/${soundId}.mp3`);
+            const arrayBuffer = await response.arrayBuffer();
+            const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+            audioBuffers.set(soundId, audioBuffer);
+            return audioBuffer;
+        } catch (error) {
+            console.error(`Erro ao carregar o som ${soundId}:`, error);
+            return null;
+        }
+    }
+
+    async function playAmbientSound(soundId) {
+        if (currentAmbientSource) { stopAmbientSound(); }
+        if (soundId === 'none' || !audioContext) return;
+        const buffer = await getAudioBuffer(soundId);
+        if (!buffer) return;
+        const source = audioContext.createBufferSource();
+        source.buffer = buffer;
+        source.loop = true;
+        source.connect(audioContext.destination);
+        source.start(0);
+        currentAmbientSource = source;
+    }
+
+    function stopAmbientSound() {
+        if (currentAmbientSource) {
+            currentAmbientSource.stop(0);
+            currentAmbientSource = null;
+        }
     }
 
     function handleTimerEnd() {
@@ -141,8 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function saveTasks() { localStorage.setItem('pomodoroTasks', JSON.stringify(tasks)); }
-    function loadTasks() { const savedTasks = localStorage.getItem('pomodoroTasks'); if (savedTasks) { tasks = JSON.parse(savedTasks); } renderTasks(); }
-
+    
     function requestNotificationPermission() { if ('Notification' in window && Notification.permission !== 'granted') { Notification.requestPermission(); } }
     function sendNotification(title, body) { if ('Notification' in window && Notification.permission === 'granted') { new Notification(title, { body }); } }
 
@@ -215,11 +270,8 @@ document.addEventListener('DOMContentLoaded', () => {
         favicon.href = favicons.playing;
         announce("Timer iniciado.");
         
-        if (currentMode === 'pomodoro' && settings.ambientSound !== 'none') {
-            const ambientSound = document.getElementById(settings.ambientSound);
-            if (ambientSound) {
-                ambientSound.play().catch(e => console.error("Erro ao tocar som ambiente:", e));
-            }
+        if (currentMode === 'pomodoro') {
+            playAmbientSound(settings.ambientSound);
         }
 
         const totalTime = settings[currentMode] * 60;
@@ -238,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(timer);
         if (timeLeft > 0) { favicon.href = favicons.paused; }
         announce("Timer pausado.");
-        stopAllAmbientSounds();
+        stopAmbientSound();
     }
 
     function stopTimer() {
@@ -278,10 +330,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function init() {
         loadSettings();
-        loadTasks();
+        loadTasks(); // Agora é seguro chamar, pois a função foi corrigida
         setupTheme();
         
-        startBtn.addEventListener('click', () => { unlockAudioContext(); requestNotificationPermission(); startTimer(); });
+        startBtn.addEventListener('click', () => { initAudio(); requestNotificationPermission(); startTimer(); });
         pauseBtn.addEventListener('click', pauseTimer);
         stopBtn.addEventListener('click', stopTimer);
         saveSettingsBtn.addEventListener('click', saveSettings);
