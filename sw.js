@@ -1,4 +1,4 @@
-const CACHE_NAME = 'concentrare-v2'; // Mude a versão para forçar a atualização do cache
+const CACHE_NAME = 'concentrare-v2.2'; // Mude a versão para forçar a atualização do cache
 const FILES_TO_CACHE = [
     '/',
     'index.html',
@@ -23,7 +23,8 @@ const FILES_TO_CACHE = [
     'assets/sounds/ambient/library.mp3',
     'assets/sounds/ambient/brown-noise.mp3',
     'assets/sounds/ambient/lo-fi.mp3',
-    // Dependências Externas
+    'assets/sounds/ambient/beach.mp3',
+    // Dependências Extern'assets/sounds/ambient/lo-fi.mp3',as
     'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
     'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css',
     'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js'
