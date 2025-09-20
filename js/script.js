@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const startBtn = document.getElementById('start-btn');
     const pauseBtn = document.getElementById('pause-btn');
     const stopBtn = document.getElementById('stop-btn');
+    const nextBtn = document.getElementById('next-btn'); // NOVO: Seletor para o botão "PRÓXIMO"
     const pomodoroCounterDisplay = document.getElementById('pomodoro-counter');
     const cycleCounterDisplay = document.getElementById('cycle-counter');
     const progressRing = document.querySelector('.progress-ring-fg');
@@ -20,9 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const announcer = document.getElementById('announcer');
 
     const favicons = {
-        default: "data:image/svg+xml,...",
-        playing: "data:image/svg+xml,...",
-        paused: "data:image/svg+xml,..."
+        default: "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⏰</text></svg>",
+        playing: "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>▶️</text></svg>",
+        paused: "data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⏸️</text></svg>"
     };
 
     const taskForm = document.getElementById('task-form');
@@ -30,7 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskList = document.getElementById('task-list');
     const taskSummary = document.getElementById('task-summary');
     const alarmSoundSelect = document.getElementById('alarm-sound-select');
-    const ambientSoundSelect = document.getElementById('ambient-sound-select');
+    const ambientSoundSelect = document.getElementById('ambient-sound-select-main');
+    const autoStartBreaksSwitch = document.getElementById('auto-start-breaks-switch');
     const statsModal = new bootstrap.Modal(document.getElementById('statsModal'));
     const statsToday = document.getElementById('stats-today');
     const statsTotal = document.getElementById('stats-total');
@@ -57,7 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
         pomodoro: 25, shortBreak: 5, longBreak: 15,
         pomodorosPerCycle: 4, totalCycles: 1, 
         alarmSound: 'notification1',
-        ambientSound: 'none'
+        ambientSound: 'none',
+        autoStartBreaks: true
     };
     
     let audioContext;
@@ -65,28 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentAmbientSource = null;
 
     // --- FUNÇÕES ---
-
-    // CORREÇÃO APLICADA AQUI
-    function loadTasks() {
-        const savedTasks = localStorage.getItem('pomodoroTasks');
-        if (savedTasks) {
-            try {
-                let parsedTasks = JSON.parse(savedTasks);
-                // Filtra o array para garantir que cada tarefa seja um objeto válido com id e texto
-                tasks = parsedTasks.filter(task => task && typeof task.id !== 'undefined' && typeof task.text !== 'undefined');
-            } catch (error) {
-                console.error("Erro ao carregar tarefas do localStorage:", error);
-                tasks = []; // Em caso de erro, reseta para um array vazio
-            }
-        }
-        renderTasks();
-    }
-
-    // O restante do seu script.js continua aqui, sem alterações...
-    // (Cole o resto das funções aqui)
-    
-    function announce(message) { announcer.textContent = message; }
-
     function initAudio() {
         if (isAudioInitialized) return;
         try {
@@ -138,6 +119,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function announce(message) { announcer.textContent = message; }
+
+    function skipToNextMode() {
+        if (confirm('Você tem certeza que deseja pular para a próxima fase?')) {
+            handleTimerEnd();
+        }
+    }
+
     function handleTimerEnd() {
         pauseTimer();
         const alarm = document.getElementById(settings.alarmSound);
@@ -153,25 +142,39 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentMode === 'pomodoro') {
             pomodorosCompletedInCycle++;
             updatePomodoroHistory();
+            
+            let nextMode;
             if (pomodorosCompletedInCycle >= settings.pomodorosPerCycle) {
                 if (currentCycle >= settings.totalCycles) {
                     sendNotification("Ciclos completos!", "Bom trabalho! Você completou todos os seus ciclos.");
-                    resetApp(); return;
+                    resetApp(); 
+                    return;
                 }
                 currentCycle++;
                 pomodorosCompletedInCycle = 0;
-                sendNotification("Hora da Pausa Longa!", `Relaxe por ${settings.longBreak} minutos.`);
-                switchMode('longBreak');
+                nextMode = 'longBreak';
             } else {
-                sendNotification("Hora da Pausa Curta!", `Faça uma pausa de ${settings.shortBreak} minutos.`);
-                switchMode('shortBreak');
+                nextMode = 'shortBreak';
             }
-        } else {
+            
+            switchMode(nextMode);
+
+            if (settings.autoStartBreaks) {
+                const breakName = nextMode === 'longBreak' ? 'Pausa Longa' : 'Pausa Curta';
+                sendNotification(`Hora da ${breakName}!`, "A pausa começará em breve.");
+                setTimeout(startTimer, 1000);
+            } else {
+                sendNotification("Sessão de Foco Concluída!", "Clique em INICIAR para começar sua pausa.");
+                startBtn.innerHTML = '<i class="bi bi-play-fill"></i> INICIAR PAUSA';
+            }
+
+        } else { // Se uma pausa terminou
             sendNotification("De volta ao Foco!", `Vamos para mais ${settings.pomodoro} minutos de trabalho.`);
             switchMode('pomodoro');
+            // A transição da pausa de volta para o foco sempre começa automaticamente.
+            setTimeout(startTimer, 1000);
         }
         updateCounters();
-        setTimeout(startTimer, 1000);
     }
 
     function resetApp() {
@@ -198,6 +201,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function saveTasks() { localStorage.setItem('pomodoroTasks', JSON.stringify(tasks)); }
     
+    function loadTasks() { 
+        const savedTasks = localStorage.getItem('pomodoroTasks');
+        if (savedTasks) {
+            try {
+                let parsedTasks = JSON.parse(savedTasks);
+                tasks = parsedTasks.filter(task => task && typeof task.id !== 'undefined' && typeof task.text !== 'undefined');
+            } catch (error) {
+                console.error("Erro ao carregar tarefas do localStorage:", error);
+                tasks = [];
+            }
+        }
+        renderTasks();
+    }
+
     function requestNotificationPermission() { if ('Notification' in window && Notification.permission !== 'granted') { Notification.requestPermission(); } }
     function sendNotification(title, body) { if ('Notification' in window && Notification.permission === 'granted') { new Notification(title, { body }); } }
 
@@ -236,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
         settings.pomodorosPerCycle = parseInt(inputs.pomodorosPerCycle.value);
         settings.totalCycles = parseInt(inputs.totalCycles.value);
         settings.alarmSound = alarmSoundSelect.value;
-        settings.ambientSound = ambientSoundSelect.value;
+        settings.autoStartBreaks = autoStartBreaksSwitch.checked;
         localStorage.setItem('pomodoroSettings', JSON.stringify(settings));
         settingsModal.hide();
         resetApp();
@@ -252,6 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
         inputs.totalCycles.value = settings.totalCycles;
         alarmSoundSelect.value = settings.alarmSound;
         ambientSoundSelect.value = settings.ambientSound;
+        autoStartBreaksSwitch.checked = settings.autoStartBreaks;
     }
 
     function updateTimerDisplay() {
@@ -265,6 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function startTimer() {
         if (isRunning) return;
+        startBtn.innerHTML = '<i class="bi bi-play-fill"></i> INICIAR'; // Garante que o texto do botão esteja correto
         isRunning = true;
         updateControlButtons();
         favicon.href = favicons.playing;
@@ -296,24 +315,25 @@ document.addEventListener('DOMContentLoaded', () => {
     function stopTimer() {
         pauseTimer();
         favicon.href = favicons.default;
-        switchMode(currentMode);
+        switchMode(currentMode); // Reseta o timer para o modo atual (início)
     }
 
     function switchMode(mode) {
-        pauseTimer();
+        pauseTimer(); // Pausa o timer atual antes de mudar
         currentMode = mode;
-        timeLeft = settings[mode] * 60;
+        timeLeft = settings[mode] * 60; // Define o tempo com base nas configurações
         modeButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
         const modeNames = { pomodoro: "Pomodoro", shortBreak: "Pausa Curta", longBreak: "Pausa Longa" };
         announce(`Modo alterado para ${modeNames[mode]}.`);
-        updateTimerDisplay();
-        setProgress(0);
+        updateTimerDisplay(); // Atualiza o display do timer imediatamente
+        setProgress(0); // Reseta a barra de progresso
     }
 
     function updateControlButtons() {
         startBtn.classList.toggle('hidden', isRunning);
         pauseBtn.classList.toggle('hidden', !isRunning);
         stopBtn.classList.toggle('hidden', !isRunning);
+        nextBtn.classList.toggle('hidden', !isRunning); // Controla a visibilidade do botão "PRÓXIMO"
     }
 
     function setupTheme() {
@@ -330,41 +350,71 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function init() {
         loadSettings();
-        loadTasks(); // Agora é seguro chamar, pois a função foi corrigida
+        loadTasks();
         setupTheme();
         
+        // Listeners de eventos
         startBtn.addEventListener('click', () => { initAudio(); requestNotificationPermission(); startTimer(); });
         pauseBtn.addEventListener('click', pauseTimer);
         stopBtn.addEventListener('click', stopTimer);
+        nextBtn.addEventListener('click', skipToNextMode); // NOVO: Listener para o botão "PRÓXIMO"
         saveSettingsBtn.addEventListener('click', saveSettings);
         themeToggleBtn.addEventListener('click', toggleTheme);
         document.addEventListener('keydown', handleKeyPress);
         document.getElementById('statsModal').addEventListener('show.bs.modal', renderStats);
         pomodoroWidget.addEventListener('animationend', () => pomodoroWidget.classList.remove('timer-ended-flash'));
 
+        ambientSoundSelect.addEventListener('change', () => {
+            settings.ambientSound = ambientSoundSelect.value;
+            localStorage.setItem('pomodoroSettings', JSON.stringify(settings));
+            if (isRunning && currentMode === 'pomodoro') {
+                playAmbientSound(settings.ambientSound);
+            }
+        });
+
         modeButtons.forEach(btn => btn.addEventListener('click', () => switchMode(btn.dataset.mode)));
         
         taskForm.addEventListener('submit', (e) => {
-            e.preventDefault(); const text = taskInput.value.trim();
-            if (text) { tasks.push({ id: Date.now(), text, completed: false }); taskInput.value = ''; saveTasks(); renderTasks(); }
+            e.preventDefault(); 
+            const text = taskInput.value.trim();
+            if (text) {
+                tasks.push({ id: Date.now(), text, completed: false });
+                taskInput.value = '';
+                saveTasks();
+                renderTasks();
+            }
         });
 
         taskList.addEventListener('click', (e) => {
-            const li = e.target.closest('li'); if (!li) return; const id = parseInt(li.dataset.id);
-            if (e.target.type === 'checkbox') { const task = tasks.find(t => t.id === id); task.completed = e.target.checked; }
-            if (e.target.closest('.delete-task-btn')) { tasks = tasks.filter(t => t.id !== id); }
-            saveTasks(); renderTasks();
+            const li = e.target.closest('li');
+            if (!li) return;
+            const id = parseInt(li.dataset.id);
+
+            if (e.target.type === 'checkbox') {
+                const task = tasks.find(t => t.id === id);
+                if (task) {
+                    task.completed = e.target.checked;
+                }
+            } else if (e.target.closest('.delete-task-btn')) {
+                tasks = tasks.filter(t => t.id !== id);
+            }
+            saveTasks();
+            renderTasks();
         });
         
+        // Inicializa o modo e os contadores
         switchMode('pomodoro');
         updateCounters();
     }
 
     init();
 
+    // Registro do Service Worker para PWA
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js').then(reg => console.log('Service worker registrado.')).catch(err => console.log('Service worker: Erro:', err));
+            navigator.serviceWorker.register('/sw.js')
+                .then(reg => console.log('Service worker registrado com sucesso:', reg))
+                .catch(err => console.log('Service worker: Erro no registro:', err));
         });
     }
 });

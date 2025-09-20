@@ -1,4 +1,4 @@
-const CACHE_NAME = 'concentrare-v2.2'; // Mude a versão para forçar a atualização do cache
+const CACHE_NAME = 'concentrare-v2.3'; // Mude a versão para forçar a atualização do cache
 const FILES_TO_CACHE = [
     '/',
     'index.html',

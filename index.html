@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Um temporizador Pomodoro completo com lista de tarefas, relatórios e temas para ajudar você a focar e aumentar sua produtividade.">
-    <title>Concentrare - Sistema Pomodoro</title>
+    <title>CONCENTRARE</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,7 +25,7 @@
     <div id="announcer" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
 
     <header class="app-header">
-        <h1 class="app-title">Concentrare</h1>
+        <h1 class="app-title">CONCENTRARE</h1>
         <div class="header-controls">
             <button class="icon-btn" id="theme-toggle-btn" aria-label="Alternar tema claro e escuro"><i class="bi bi-moon-stars-fill"></i></button>
             <button class="icon-btn" data-bs-toggle="modal" data-bs-target="#statsModal" aria-label="Abrir relatórios e estatísticas"><i class="bi bi-bar-chart-line"></i></button>
@@ -49,8 +49,22 @@
             </div>
             <div id="control-buttons" class="control-buttons-container">
                 <button id="start-btn" class="control-btn start-btn"><i class="bi bi-play-fill"></i> INICIAR</button>
-                <button id="pause-btn" class="control-btn pause-btn hidden"><i class="bi bi-pause-fill"></i> PAUSAR</button>
-                <button id="stop-btn" class="control-btn stop-btn hidden"><i class="bi bi-stop-fill"></i> PARAR</button>
+                <button id="pause-btn" class="control-btn pause-btn hidden" aria-label="Pausar"><i class="bi bi-pause-fill"></i></button>
+                <button id="stop-btn" class="control-btn stop-btn hidden" aria-label="Parar"><i class="bi bi-stop-fill"></i></button>
+                <button id="next-btn" class="control-btn next-btn hidden" aria-label="Próxima Fase"><i class="bi bi-skip-end-fill"></i></button>
+            </div>
+            <div class="ambient-sound-control">
+                <select id="ambient-sound-select-main" class="form-select form-select-sm">
+                    <option value="none">Nenhum Som</option>
+                    <option value="tick-tock">Tic Tac</option>
+                    <option value="gentle-rain">Chuva Suave</option>
+                    <option value="heavy-rain">Chuva Pesada</option>
+                    <option value="night-forest">Floresta Noturna</option>
+                    <option value="library">Biblioteca</option>
+                    <option value="beach">Praia</option>
+                    <option value="brown-noise">Ruído Marrom</option>
+                    <option value="lo-fi">Lo-Fi</option>
+                </select>
             </div>
             <div class="counters-container">
                 <span id="pomodoro-counter">Pomodoro: 0 / 4</span>
@@ -86,34 +100,19 @@
                 <div class="col"><label for="long-break-time" class="form-label">Pausa Longa</label><input type="number" class="form-control" id="long-break-time" min="1"></div>
             </div>
             <hr>
-            <h6>Organização</h6>
+            <h6>Organização e Comportamento</h6>
             <div class="row g-3">
-                <div class="col"><label for="pomodoros-per-cycle" class="form-label">Pomodoros por Ciclo</label><input type="number" class="form-control" id="pomodoros-per-cycle" min="1"></div>
-                <div class="col"><label for="total-cycles" class="form-label">Total de Ciclos</label><input type="number" class="form-control" id="total-cycles" min="1"></div>
+                <div class="col-sm-6"><label for="pomodoros-per-cycle" class="form-label">Pomodoros por Ciclo</label><input type="number" class="form-control" id="pomodoros-per-cycle" min="1"></div>
+                <div class="col-sm-6"><label for="total-cycles" class="form-label">Total de Ciclos</label><input type="number" class="form-control" id="total-cycles" min="1"></div>
+            </div>
+            <div class="form-check form-switch mt-3">
+              <input class="form-check-input" type="checkbox" role="switch" id="auto-start-breaks-switch" checked>
+              <label class="form-check-label" for="auto-start-breaks-switch">Iniciar pausas automaticamente</label>
             </div>
             <hr>
             <h6>Sons</h6>
             <div class="row g-3">
-                <div class="col-sm-6">
-                    <label for="alarm-sound-select" class="form-label">Alarme</label>
-                    <select id="alarm-sound-select" class="form-select">
-                        <option value="notification1">Notificação</option>
-                        <option value="notification2">Digital</option>
-                        <option value="bell">Sino</option></select></div>
-                <div class="col-sm-6">
-                    <label for="ambient-sound-select" class="form-label">Som de Fundo (Foco)</label>
-                    <select id="ambient-sound-select" class="form-select">
-                        <option value="none">Nenhum Som</option>
-                        <option value="tick-tock">Tic Tac</option>
-                        <option value="gentle-rain">Chuva Suave</option>
-                        <option value="heavy-rain">Chuva Pesada</option>
-                        <option value="night-forest">Floresta Noturna</option>
-                        <option value="library">Biblioteca</option>
-                        <option value="beach">Praia</option>
-                        <option value="brown-noise">Ruído Marrom</option>
-                        <option value="lo-fi">Lo-Fi</option>
-                    </select>
-                </div>
+                <div class="col"><label for="alarm-sound-select" class="form-label">Alarme</label><select id="alarm-sound-select" class="form-select"><option value="notification1">Notificação</option><option value="notification2">Digital</option><option value="bell">Sino</option></select></div>
             </div>
           </div>
           <div class="modal-footer"><button type="button" class="btn btn-primary" id="save-settings-btn">Salvar</button></div>
@@ -122,31 +121,13 @@
     </div>
     
     <div class="modal fade" id="statsModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Relatórios</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <h5>Pomodoros Concluídos</h5>
-                    <div class="stats-group">
-                        <p class="stats-value" id="stats-today">0</p>
-                        <p class="stats-label">Hoje</p>
-                    </div>
-                    <div class="stats-group">
-                        <p class="stats-value" id="stats-total">0</p>
-                        <p class="stats-label">Total</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Relatórios</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body text-center"><h5>Pomodoros Concluídos</h5><div class="stats-group"><p class="stats-value" id="stats-today">0</p><p class="stats-label">Hoje</p></div><div class="stats-group"><p class="stats-value" id="stats-total">0</p><p class="stats-label">Total</p></div></div></div></div>
     </div>
 
     <audio id="notification1" src="assets/sounds/notification.mp3" preload="auto"></audio>
     <audio id="notification2" src="assets/sounds/digital.mp3" preload="auto"></audio>
     <audio id="bell" src="assets/sounds/bell.mp3" preload="auto"></audio>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
     <script src="js/script.js" defer></script>
 </body>
