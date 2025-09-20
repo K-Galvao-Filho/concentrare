@@ -2,48 +2,52 @@
 
 Um dashboard de produtividade completo e moderno, baseado na técnica Pomodoro. Projetado para maximizar o foco e organizar suas tarefas através de uma interface limpa, responsiva, acessível e instalável.
 
+*(**Instrução:** Tire uma captura de tela da sua aplicação finalizada e substitua o link acima pela sua imagem.)*
+
+## Tabela de Conteúdos
+
+1.  Visão Geral e Filosofia do Projeto
+2.  Funcionalidades Detalhadas
+3.  Estrutura e Tecnologias
+4.  Guia de Instalação e Execução
+5.  Licença
+
+-----
+
 ### I. Visão Geral e Filosofia do Projeto
 
-**CONCENTRARE** foi concebido para ser mais do que um simples timer: é um ambiente de foco completo. A aplicação foi desenvolvida com base em quatro pilares arquitetônicos:
+**CONCENTRARE** é mais do que um simples timer: é um ambiente de foco completo construído com tecnologias web modernas. A aplicação combina um timer Pomodoro altamente configurável com um gerenciador de tarefas e sons de ambiente para criar um espaço de trabalho produtivo.
 
-1.  **Modularidade Visual:** A interface é dividida em componentes lógicos e independentes: um `header` para navegação e configurações, e dois "cards" (`widgets`) principais para o **Timer** e as **Tarefas**. Essa separação clara de responsabilidades resulta em uma experiência de usuário mais limpa e organizada, especialmente em telas maiores.
+A arquitetura foi projetada com base em quatro pilares:
 
-2.  **Estado Centralizado no Cliente:** A aplicação opera como uma **Single Page Application (SPA)** pura, sem a necessidade de um backend. Todo o estado — configurações, tarefas, tema visual, histórico — é gerenciado por variáveis JavaScript e persistido de forma segura no navegador do usuário através da `localStorage API`. Isso garante que a aplicação seja extremamente rápida e que os dados do usuário sejam mantidos entre as sessões.
-
-3.  **Experiência Offline-First (PWA):** O CONCENTRARE é um **Progressive Web App (PWA)**. Através de um **Service Worker**, todos os recursos essenciais (arquivos, estilos, sons) são armazenados em cache local. Isso significa que, após a primeira visita, a aplicação carrega instantaneamente e **funciona perfeitamente mesmo sem conexão com a internet**, garantindo que a produtividade do usuário nunca seja interrompida.
-
-4.  **Acessibilidade (a11y) por Design:** A acessibilidade foi um requisito central. O uso de atributos `aria-label` para controles visuais e uma região `aria-live` para anunciar mudanças de estado dinamicamente garante que usuários que dependem de leitores de tela possam interagir com todas as funcionalidades da aplicação de forma plena e eficaz.
+1.  **Modularidade Visual:** A interface é dividida em componentes lógicos e independentes: um `header` para navegação e configurações, e dois "cards" (`widgets`) principais para o **Timer** e as **Tarefas**.
+2.  **Estado Centralizado no Cliente:** É uma **Single Page Application (SPA)** pura. Todo o estado (configurações, tarefas, tema, etc.) é gerenciado no cliente e persistido através da `localStorage API`, garantindo rapidez e continuidade entre as sessões.
+3.  **Experiência Offline-First (PWA):** Como um **Progressive Web App (PWA)**, todos os recursos essenciais são armazenados em cache por um **Service Worker**, permitindo que a aplicação carregue instantaneamente e funcione perfeitamente mesmo sem conexão com a internet.
+4.  **Acessibilidade (a11y) por Design:** A aplicação foi desenvolvida com acessibilidade em mente, utilizando atributos `ARIA` e regiões `aria-live` para garantir uma experiência completa para usuários que dependem de leitores de tela.
 
 ### II. Funcionalidades Detalhadas
 
-Cada funcionalidade foi implementada com foco em robustez, performance e experiência do usuário.
-
-#### O Temporizador (Núcleo)
-
-O coração da aplicação é um timer preciso e visualmente informativo.
-
-  * **Lógica de Controle:** A contagem é gerenciada por `setInterval`, garantindo eficiência ao ser criada apenas quando o timer está ativo (`startTimer`) e destruída (`clearInterval`) ao ser pausado, parado ou ao trocar de modo.
-  * **Progresso Visual:** O anel de progresso é uma animação SVG fluida. A cada segundo, a propriedade CSS `stroke-dashoffset` do círculo é recalculada com base na porcentagem de tempo decorrido, oferecendo um feedback visual intuitivo.
-
-#### Sistema de Áudio Híbrido
-
-Para oferecer a melhor experiência sonora, a aplicação utiliza duas tecnologias de áudio distintas:
-
-  * **Alarmes (One-Shot):** Para os alertas de fim de ciclo, que são sons curtos e únicos, são utilizadas tags `<audio>` padrão do HTML pela sua simplicidade e confiabilidade.
-  * **Sons de Ambiente (Loop Contínuo):** Para os sons de fundo, que exigem um loop perfeito, foi implementada a **Web Audio API**. Este sistema avançado carrega os sons na memória (`AudioBuffer`), permitindo que sejam tocados em um loop **matematicamente preciso e sem nenhum "engasgo" ou delay**, algo que a tag `<audio>` sozinha não consegue garantir.
-
-#### Gerenciador de Tarefas
-
-  * **Baseado em Estado:** As tarefas são mantidas em um array de objetos `tasks`. A interface é uma representação direta desse array, sendo completamente reconstruída pela função `renderTasks` sempre que o estado muda.
-  * **Interatividade Eficiente:** Para evitar a sobrecarga de múltiplos `event listeners`, a aplicação utiliza **delegação de eventos**. Um único listener é anexado à lista `<ul>`, gerenciando cliques em checkboxes e botões de exclusão de qualquer tarefa, presente ou futura.
-  * **Código Defensivo:** A função `loadTasks` que carrega os dados do `localStorage` foi programada para "sanitizar" os dados, filtrando e removendo quaisquer tarefas corrompidas ou malformadas de versões antigas da aplicação, prevenindo bugs.
-
-#### Progressive Web App (PWA)
-
-  * **`manifest.json`**: Fornece a "identidade" da aplicação (nome, ícones, cores), permitindo que o navegador ofereça a opção de **instalação** no desktop ou celular.
-  * **`sw.js` (Service Worker)**: Atua como um proxy de rede. No evento `install`, ele proativamente armazena em cache todos os arquivos vitais. No evento `fetch`, ele intercepta as requisições e serve os arquivos diretamente do cache, garantindo o funcionamento offline.
-
------
+  * **Timer Pomodoro Completo**: Modos de Foco, Pausa Curta e Pausa Longa, com um anel de progresso visual em SVG.
+  * **Controles Avançados do Timer**:
+      * **Início Automático de Pausas**: Uma opção nas configurações permite ativar ou desativar o início automático das pausas.
+      * **Botão 'PRÓXIMO'**: Permite pular instantaneamente para a próxima fase (de foco para pausa, ou de pausa para foco) com um clique.
+      * **Controles Otimizados**: Botões icônicos e de mesmo tamanho para Pausar, Parar e Pular, criando uma interface de controle mais limpa e minimalista.
+  * **Altamente Configurável**: Ajuste a duração dos timers, a quantidade de pomodoros por ciclo e o número total de ciclos.
+  * **Lista de Tarefas (To-Do List)**: Adicione, conclua e delete tarefas. Os dados são salvos localmente no navegador.
+  * **Relatórios de Produtividade**: Acompanhe seu progresso com estatísticas de pomodoros concluídos hoje e no total.
+  * **Sons de Ambiente em Loop Perfeito**: Escolha entre vários sons de fundo (Chuva, Floresta, Ruído Marrom, etc.) que tocam de forma contínua e sem delays durante as sessões de foco, graças à **Web Audio API**.
+  * **Alarmes Personalizáveis**: Selecione diferentes sons de alarme para o final de cada ciclo.
+  * **Progressive Web App (PWA)**:
+      * **Instalável** em desktops e dispositivos móveis para uma experiência nativa.
+      * Funciona **100% offline**.
+  * **Temas Claro e Escuro**: Alterne entre os temas para maior conforto visual.
+  * **Atalhos de Teclado**:
+      * `Barra de Espaço`: Iniciar / Pausar
+      * `S`: Parar o timer atual
+      * `Alt + P`: Mudar para modo Pomodoro
+      * `Alt + C`: Mudar para modo Pausa Curta
+      * `Alt + L`: Mudar para modo Pausa Longa
+  * **Favicon Dinâmico**: O ícone na aba do navegador muda para refletir o estado do timer.
 
 ### III. Estrutura e Tecnologias
 
@@ -64,9 +68,9 @@ concentrare/
 │   └── 📄 script.js
 │
 └── 📁 assets/
-    ├── 📁 images/
+    ├── 📁 images/       (ícones para o PWA)
     └── 📁 sounds/
-        ├── 📁 ambient/
+        ├── 📁 ambient/  (sons de fundo em loop)
         └── (arquivos de alarme)
 ```
 
@@ -77,7 +81,7 @@ concentrare/
   * **JavaScript (ES6+)** (Vanilla JS, sem frameworks)
   * **Web Audio API**
   * **Bootstrap 5** (Modals e Ícones)
-  * **PWA** (Service Worker & Manifest)
+  * **PWA** (Service Worker & Web App Manifest)
 
 -----
 
@@ -105,10 +109,10 @@ Para rodar este projeto localmente, é necessário um servidor web para que as f
 
 4.  **Forneça os Assets:**
 
-      * Adicione os ícones da aplicação (`icon-192x192.png`, `icon-512x512.png`) na pasta `assets/images/`.
+      * Adicione os ícones da aplicação na pasta `assets/images/`.
       * Adicione os arquivos de som de alarme e de ambiente (`.mp3`) nas pastas correspondentes em `assets/sounds/`.
 
-5.  **Inicie o Servidor Local:**
+5.  **Inicie um Servidor Local:**
 
       * No VS Code, clique com o botão direito no arquivo `index.html` e selecione "Open with Live Server".
 
@@ -116,4 +120,4 @@ Para rodar este projeto localmente, é necessário um servidor web para que as f
 
 ### V. Licença
 
-Este projeto está sob a Licença MIT.
+Distribuído sob a Licença MIT.
