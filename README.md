@@ -98,7 +98,7 @@ Para rodar este projeto localmente, é necessário um servidor web para que as f
 2.  **Clone o repositório:**
 
     ```bash
-    git clone https://github.com/seu-usuario/concentrare.git
+    git clone https://github.com/kgfilho/concentrare.git
     ```
 
 3.  **Navegue até a pasta do projeto:**
