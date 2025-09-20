@@ -1,4 +1,3 @@
-
 # CONCENTRARE - Sistema Pomodoro 🍅
 
 Um dashboard de produtividade completo e moderno, baseado na técnica Pomodoro. Projetado para maximizar o foco e organizar suas tarefas através de uma interface limpa, responsiva, acessível e instalável.
@@ -7,11 +6,11 @@ Um dashboard de produtividade completo e moderno, baseado na técnica Pomodoro. 
 
 ## Tabela de Conteúdos
 
-1.  [Visão Geral e Filosofia do Projeto](https://www.google.com/search?q=%23i-vis%C3%A3o-geral-e-filosofia-do-projeto)
-2.  [Funcionalidades Detalhadas](https://www.google.com/search?q=%23ii-funcionalidades-detalhadas)
-3.  [Estrutura e Tecnologias](https://www.google.com/search?q=%23iii-estrutura-e-tecnologias)
-4.  [Guia de Instalação e Execução](https://www.google.com/search?q=%23iv-guia-de-instala%C3%A7%C3%A3o-e-execu%C3%A7%C3%A3o)
-5.  [Licença](https://www.google.com/search?q=%23v-licen%C3%A7a)
+1.  Visão Geral e Filosofia do Projeto
+2.  Funcionalidades Detalhadas
+3.  Estrutura e Tecnologias
+4.  Guia de Instalação e Execução
+5.  Licença
 
 -----
 
