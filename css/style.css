@@ -1,23 +1,27 @@
 :root {
-    --bg-color: #FDFBFA;
+    --bg-color: #eff0eb;
     --widget-bg-color: #FFFFFF;
     --main-text-color: #4F4F4F;
     --header-text-color: #333333;
     --accent-color: #79A37D;
     --accent-color-dark: #688f6c;
-    --active-mode-bg: #E9DDCF;
+    --active-mode-bg: #e5e2d9;
     --progress-ring-bg: #E0E0E0;
     --shadow-color: rgba(0, 0, 0, 0.05);
+    --border-color: #E0E0E0;
 }
 
 body.theme-dark {
-    --bg-color: #121212;
-    --widget-bg-color: #1E1E1E;
-    --main-text-color: #BDBDBD;
-    --header-text-color: #FFFFFF;
-    --active-mode-bg: #333333;
-    --progress-ring-bg: #424242;
+    --bg-color: #1a1d1a;
+    --widget-bg-color: #242924;
+    --main-text-color: #b0b8b0;
+    --header-text-color: #e8f0e8;
+    --accent-color: #8BC34A;
+    --accent-color-dark: #79A37D;
+    --active-mode-bg: #353b35;
+    --progress-ring-bg: #3f4a3f;
     --shadow-color: rgba(0, 0, 0, 0.2);
+    --border-color: #3f4a3f;
 }
 
 body {
@@ -42,12 +46,13 @@ body {
     font-size: 1.5rem;
     font-weight: 700;
     color: var(--header-text-color);
-    margin: 0; /* CORREÇÃO APLICADA AQUI */
+    margin: 0 0 0 10px; /* SUA ALTERAÇÃO APLICADA */
 }
 
 .header-controls {
     display: flex;
     gap: 0.75rem;
+    margin: 0 10px 0 0; /* SUA ALTERAÇÃO APLICADA */
 }
 
 .icon-btn {
@@ -62,7 +67,6 @@ body {
 .icon-btn:hover {
     opacity: 1;
 }
-
 
 /* Wrapper para os cards de conteúdo */
 .content-wrapper {
@@ -86,7 +90,6 @@ body {
     flex-direction: column;
     align-items: center;
 }
-
 
 /* --- Estilos dos componentes internos --- */
 #pomodoro-container {
@@ -129,7 +132,7 @@ body {
 .task-header h3 { font-size: 1.2rem; font-weight: 700; color: var(--header-text-color); margin: 0; }
 .task-summary { font-size: 0.9rem; font-weight: 600; background-color: var(--active-mode-bg); color: var(--header-text-color); padding: 0.2rem 0.6rem; border-radius: 10px; }
 .task-list { width: 100%; list-style: none; padding: 0; margin: 0 0 1rem 0; max-height: 280px; overflow-y: auto; }
-.task-list li { display: flex; align-items: center; padding: 0.8rem 0.5rem; border-bottom: 1px solid var(--progress-ring-bg); }
+.task-list li { display: flex; align-items: center; padding: 0.8rem 0.5rem; border-bottom: 1px solid var(--border-color); }
 .task-list li:last-child { border-bottom: none; }
 .task-list input[type="checkbox"] { margin-right: 1rem; width: 18px; height: 18px; }
 .task-list .task-text { flex-grow: 1; transition: color 0.3s; }
@@ -137,7 +140,7 @@ body {
 .task-list .delete-task-btn { background: none; border: none; color: var(--main-text-color); opacity: 0.5; cursor: pointer; transition: opacity 0.2s; }
 .task-list .delete-task-btn:hover { opacity: 1; color: #ef5350; }
 .task-form { width: 100%; display: flex; gap: 0.5rem; }
-.task-form input { flex-grow: 1; border: 1px solid var(--progress-ring-bg); background-color: var(--bg-color); color: var(--header-text-color); padding: 0.5rem 1rem; border-radius: 8px; }
+.task-form input { flex-grow: 1; border: 1px solid var(--border-color); background-color: var(--bg-color); color: var(--header-text-color); padding: 0.5rem 1rem; border-radius: 8px; }
 .task-form button { background-color: var(--accent-color); border: none; color: white; border-radius: 8px; width: 40px; height: 40px; cursor: pointer; }
 
 /* Media Query para telas pequenas (responsividade) */
