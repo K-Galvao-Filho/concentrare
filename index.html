@@ -22,11 +22,6 @@
     </noscript>
 </head>
 <body>
-    <iframe width="560" height="315"
-  src="https://www.youtube.com/embed/jfKfPfyJRdk"
-  title="YouTube video player" frameborder="0"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-  allowfullscreen></iframe>
     <div id="announcer" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
 
     <header class="app-header">
@@ -64,7 +59,7 @@
                     <optgroup label="YouTube">
                         <option value="youtube_jfKfPfyJRdk">Lofi Girl Radio</option>
                         <option value="youtube_4xDzrJKXOOY">Synthwave Radio</option>
-                        <option value="youtube_qb5duRUf6dw">Purple Cat</option>
+                        <option value="youtube_-5KAN9_CzSA">Jazz Cafe</option>
                     </optgroup>
                     <optgroup label="Sons de Ambiente">
                         <option value="tick-tock">Tic Tac</option>
@@ -72,9 +67,7 @@
                         <option value="heavy-rain">Chuva Pesada</option>
                         <option value="night-forest">Floresta Noturna</option>
                         <option value="library">Biblioteca</option>
-                        <option value="beach">Praia</option>    
                         <option value="brown-noise">Ruído Marrom</option>
-                        <option value="lo-fi">Lo-Fi</option>
                     </optgroup>
                 </select>
             </div>
@@ -145,6 +138,13 @@
     <audio id="notification2" src="assets/sounds/digital.mp3" preload="auto"></audio>
     <audio id="bell" src="assets/sounds/bell.mp3" preload="auto"></audio>
 
+    <script>
+        function onYouTubeIframeAPIReady() {
+            import('./js/audio.js').then(audioModule => {
+                audioModule.initializeYouTubeAPI();
+            });
+        }
+    </script>
     <script src="https://www.youtube.com/iframe_api"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
     <script type="module" src="js/main.js" defer></script>

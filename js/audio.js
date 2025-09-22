@@ -6,14 +6,21 @@ let audioBuffers = new Map();
 let currentAmbientSource = null;
 let isAudioInitialized = false;
 
-window.onYouTubeIframeAPIReady = function() {
+// A função de criação do player agora é EXPORTADA
+export function initializeYouTubeAPI() {
     const currentOrigin = window.location.origin;
     youtubePlayer = new YT.Player('youtube-player', {
         height: '150',
         width: '100%',
         videoId: 'jfKfPfyJRdk', 
-        playerVars: { 'autoplay': 0, 'controls': 1, 'origin': currentOrigin },
-        events: { 'onReady': onPlayerReady }
+        playerVars: {
+            'autoplay': 0,
+            'controls': 1,
+            'origin': currentOrigin
+        },
+        events: {
+            'onReady': onPlayerReady
+        }
     });
 }
 
