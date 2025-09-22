@@ -31,6 +31,7 @@ body {
     transition: background-color 0.4s ease, color 0.4s ease;
 }
 
+/* Header superior */
 .app-header {
     width: 100%;
     max-width: 1000px; 
@@ -67,6 +68,7 @@ body {
     opacity: 1;
 }
 
+/* Wrapper para os cards de conteúdo */
 .content-wrapper {
     display: flex;
     gap: 2rem;
@@ -76,6 +78,7 @@ body {
     padding: 0 1rem;
 }
 
+/* Estilo base para os cards (widgets) */
 .widget {
     background-color: var(--widget-bg-color);
     border-radius: 20px;
@@ -86,8 +89,10 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    height: 100%;
 }
 
+/* --- Estilos dos componentes internos --- */
 #pomodoro-container {
     min-width: 380px; 
 }
@@ -111,57 +116,40 @@ body {
 .progress-ring-fg { fill: none; stroke: var(--accent-color); stroke-linecap: round; transition: stroke-dashoffset 1s linear, stroke 0.4s ease; }
 .timer-display { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 5rem; font-weight: 700; color: var(--header-text-color); transition: color 0.4s ease; }
 
-.control-buttons-container { 
-    display: flex; 
-    gap: 1rem; /* Mantemos o gap entre os botões */
-    margin-bottom: 2rem; 
-    justify-content: center; 
-    align-items: center; 
-    min-height: 50px; 
-}
-
-/* Estilo base para todos os botões de controle */
-.control-btn { 
-    border-radius: 8px; 
-    border: none; 
-    font-size: 1rem; 
-    font-weight: 700; 
-    color: white; 
-    cursor: pointer; 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; /* Centraliza o conteúdo (ícone ou texto) */
-    transition: background-color 0.2s; 
-}
-
-/* Botão INICIAR manterá texto e será maior */
-.start-btn { 
-    background-color: var(--accent-color); 
-    padding: 0.8rem 2rem; /* Mantém o padding maior para o texto */
-    gap: 0.5rem; /* Mantém o gap entre ícone e texto */
-}
+.control-buttons-container { display: flex; gap: 1rem; margin-bottom: 1rem; justify-content: center; align-items: center; min-height: 50px; }
+.control-btn { border-radius: 8px; border: none; font-size: 1rem; font-weight: 700; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background-color 0.2s; }
+.start-btn { background-color: var(--accent-color); padding: 0.8rem 2rem; gap: 0.5rem; }
 .start-btn:hover { background-color: var(--accent-color-dark); }
-
-/* Botões de ícone: PAUSAR, PARAR, PRÓXIMO */
-.pause-btn, .stop-btn, .next-btn {
-    width: 48px; /* Largura fixa */
-    height: 48px; /* Altura fixa (para torná-los quadrados) */
-    padding: 0; /* Remove padding para não influenciar o tamanho do ícone */
-    font-size: 1.5rem; /* Aumenta o tamanho do ícone */
-}
-
+.pause-btn, .stop-btn, .next-btn { width: 48px; height: 48px; padding: 0; font-size: 1.5rem; }
 .pause-btn { background-color: #5c6bc0; }
 .pause-btn:hover { background-color: #3f51b5; }
 .stop-btn { background-color: #ef5350; }
 .stop-btn:hover { background-color: #e53935; }
-.next-btn { background-color: #6c757d; } /* Um cinza neutro do Bootstrap */
+.next-btn { background-color: #6c757d; }
 .next-btn:hover { background-color: #5c636a; }
-
 .hidden { display: none; }
 
-.counters-container { color: var(--main-text-color); opacity: 0.8; display: flex; gap: 2rem; }
-.visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
+.ambient-sound-control { display: flex; align-items: center; gap: 0.75rem; width: 80%; max-width: 300px; margin-bottom: 2rem; color: var(--main-text-color); }
+.ambient-sound-control .bi { font-size: 1.5rem; opacity: 0.7; }
+.ambient-sound-control .form-select { background-color: var(--bg-color); border-color: var(--border-color); color: var(--main-text-color); font-weight: 600; font-size: 0.9rem; }
+.ambient-sound-control .form-select:focus { border-color: var(--accent-color); box-shadow: 0 0 0 0.25rem rgba(121, 163, 125, 0.25); }
 
+#youtube-player-container { 
+    width: 90%; 
+    max-width: 300px; 
+    margin-bottom: 2rem; 
+    border-radius: 8px; 
+    overflow: hidden; 
+    background-color: var(--progress-ring-bg); 
+}
+#youtube-player { 
+    width: 100%; 
+    height: 150px; 
+    display: block; 
+}
+
+.counters-container { color: var(--main-text-color); opacity: 0.8; display: flex; gap: 2rem; margin-top: auto; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
 .task-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
 .task-header h3 { font-size: 1.2rem; font-weight: 700; color: var(--header-text-color); margin: 0; }
 .task-summary { font-size: 0.9rem; font-weight: 600; background-color: var(--active-mode-bg); color: var(--header-text-color); padding: 0.2rem 0.6rem; border-radius: 10px; }
@@ -173,14 +161,9 @@ body {
 .task-list .task-text.completed { text-decoration: line-through; color: var(--main-text-color); opacity: 0.6; }
 .task-list .delete-task-btn { background: none; border: none; color: var(--main-text-color); opacity: 0.5; cursor: pointer; transition: opacity 0.2s; }
 .task-list .delete-task-btn:hover { opacity: 1; color: #ef5350; }
-.task-form { width: 100%; display: flex; gap: 0.5rem; }
+.task-form { width: 100%; display: flex; gap: 0.5rem; margin-top: auto; }
 .task-form input { flex-grow: 1; border: 1px solid var(--border-color); background-color: var(--bg-color); color: var(--header-text-color); padding: 0.5rem 1rem; border-radius: 8px; }
 .task-form button { background-color: var(--accent-color); border: none; color: white; border-radius: 8px; width: 40px; height: 40px; cursor: pointer; }
-
-.ambient-sound-control { display: flex; align-items: center; gap: 0.75rem; width: 80%; max-width: 300px; margin-bottom: 2rem; color: var(--main-text-color); }
-.ambient-sound-control .bi { font-size: 1.5rem; opacity: 0.7; }
-.ambient-sound-control .form-select { background-color: var(--bg-color); border-color: var(--border-color); color: var(--main-text-color); font-weight: 600; font-size: 0.9rem; }
-.ambient-sound-control .form-select:focus { border-color: var(--accent-color); box-shadow: 0 0 0 0.25rem rgba(121, 163, 125, 0.25); }
 
 @media (max-width: 850px) {
     .content-wrapper { flex-direction: column; align-items: center; }

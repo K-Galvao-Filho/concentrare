@@ -56,6 +56,7 @@
             <div class="ambient-sound-control">
                 <select id="ambient-sound-select-main" class="form-select form-select-sm">
                     <option value="none">Nenhum Som</option>
+                    <option value="youtube">YouTube (Lofi Girl)</option>
                     <option value="tick-tock">Tic Tac</option>
                     <option value="gentle-rain">Chuva Suave</option>
                     <option value="heavy-rain">Chuva Pesada</option>
@@ -66,6 +67,11 @@
                     <option value="lo-fi">Lo-Fi</option>
                 </select>
             </div>
+            
+            <div id="youtube-player-container" class="hidden">
+                <div id="youtube-player"></div>
+            </div>
+            
             <div class="counters-container">
                 <span id="pomodoro-counter">Pomodoro: 0 / 4</span>
                 <span id="cycle-counter">Ciclo: 1 / 1</span>
@@ -128,7 +134,8 @@
     <audio id="notification2" src="assets/sounds/digital.mp3" preload="auto"></audio>
     <audio id="bell" src="assets/sounds/bell.mp3" preload="auto"></audio>
 
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
-    <script src="js/script.js" defer></script>
+    <script type="module" src="js/main.js" defer></script>
 </body>
 </html>
