@@ -1,6 +1,5 @@
+// js/audio.js
 import * as dom from './dom.js';
-
-// Gerencia a Web Audio API e o Player do YouTube.
 
 let youtubePlayer;
 let audioContext;
@@ -10,12 +9,21 @@ let isAudioInitialized = false;
 
 // --- LÓGICA DA API DO YOUTUBE ---
 window.onYouTubeIframeAPIReady = function() {
+    // ATUALIZAÇÃO IMPORTANTE AQUI
+    const currentOrigin = window.location.origin;
+
     youtubePlayer = new YT.Player('youtube-player', {
         height: '150',
         width: '100%',
-        videoId: 'jfKfPfyJRdk', // Vídeo padrão
-        playerVars: { 'autoplay': 0, 'controls': 1 },
-        events: { 'onReady': onPlayerReady }
+        videoId: 'jfKfPfyJRdk', 
+        playerVars: {
+            'autoplay': 0,
+            'controls': 1,
+            'origin': currentOrigin // <-- ADICIONADO: Diz ao YouTube qual é o nosso site
+        },
+        events: {
+            'onReady': onPlayerReady
+        }
     });
 }
 
