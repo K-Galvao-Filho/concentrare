@@ -50,7 +50,6 @@ function saveSettings() {
 function loadSettings() {
     const savedSettings = localStorage.getItem('pomodoroSettings');
     if (savedSettings) {
-        // Combina as configurações salvas com as padrão para evitar erros se novas configurações forem adicionadas
         const newSettings = { ...state.settings, ...JSON.parse(savedSettings) };
         state.setSettings(newSettings);
     }
@@ -62,7 +61,7 @@ function loadSettings() {
     dom.alarmSoundSelect.value = state.settings.alarmSound;
     dom.ambientSoundSelect.value = state.settings.ambientSound;
     dom.autoStartBreaksSwitch.checked = state.settings.autoStartBreaks;
-    dom.youtubePlayerContainer.classList.toggle('hidden', state.settings.ambientSound !== 'youtube');
+    dom.youtubePlayerContainer.classList.toggle('hidden', state.settings.ambientSound.startsWith('youtube_') === false);
 }
 
 function handleKeyPress(e) {
@@ -96,7 +95,7 @@ function init() {
         if (state.isRunning && state.currentMode === 'pomodoro') {
             playSelectedSound(state.settings.ambientSound);
         } else {
-            dom.youtubePlayerContainer.classList.toggle('hidden', state.settings.ambientSound !== 'youtube');
+            dom.youtubePlayerContainer.classList.toggle('hidden', state.settings.ambientSound.startsWith('youtube_') === false);
         }
     });
 

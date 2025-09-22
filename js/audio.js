@@ -1,3 +1,5 @@
+import * as dom from './dom.js';
+
 // Gerencia a Web Audio API e o Player do YouTube.
 
 let youtubePlayer;
@@ -9,9 +11,10 @@ let isAudioInitialized = false;
 // --- LÓGICA DA API DO YOUTUBE ---
 window.onYouTubeIframeAPIReady = function() {
     youtubePlayer = new YT.Player('youtube-player', {
-        height: '150', width: '100%',
-        videoId: 'jfKfPfyJRdk',
-        playerVars: { 'autoplay': 0, 'controls': 1, 'loop': 1, 'playlist': 'jfKfPfyJRdk' },
+        height: '150',
+        width: '100%',
+        videoId: 'jfKfPfyJRdk', // Vídeo padrão
+        playerVars: { 'autoplay': 0, 'controls': 1 },
         events: { 'onReady': onPlayerReady }
     });
 }
@@ -20,8 +23,10 @@ function onPlayerReady(event) {
     event.target.setVolume(50);
 }
 
-function playYoutubeMusic() {
-    if (youtubePlayer && typeof youtubePlayer.playVideo === 'function') {
+function playYoutubeMusic(videoId) {
+    if (youtubePlayer && typeof youtubePlayer.loadVideoById === 'function') {
+        youtubePlayer.loadVideoById(videoId);
+    } else if (youtubePlayer && typeof youtubePlayer.playVideo === 'function') {
         youtubePlayer.playVideo();
     }
 }
@@ -81,12 +86,12 @@ function stopAmbientSound() {
 // --- FUNÇÕES MESTRE DE CONTROLE ---
 export function playSelectedSound(soundId) {
     stopAllSounds();
-    const playerContainer = document.getElementById('youtube-player-container');
-    if (soundId === 'youtube') {
-        playerContainer.classList.remove('hidden');
-        playYoutubeMusic();
+    if (soundId.startsWith('youtube_')) {
+        dom.youtubePlayerContainer.classList.remove('hidden');
+        const videoId = soundId.substring(8);
+        playYoutubeMusic(videoId);
     } else {
-        playerContainer.classList.add('hidden');
+        dom.youtubePlayerContainer.classList.add('hidden');
         playAmbientSound(soundId);
     }
 }

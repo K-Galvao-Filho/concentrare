@@ -45,11 +45,7 @@ export const inputs = {
     totalCycles: document.getElementById('total-cycles')
 };
 
-// Valores calculados a partir do DOM para o anel de progresso
 export const radius = progressRing.r.baseVal.value;
 export const circumference = 2 * Math.PI * radius;
-
-// Define os atributos iniciais do anel de progresso
 progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
-// A LINHA ABAIXO É A CORREÇÃO. Ela define o anel como "vazio" no início.
 progressRing.style.strokeDashoffset = circumference;
