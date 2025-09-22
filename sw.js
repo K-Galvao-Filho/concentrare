@@ -1,12 +1,15 @@
-// Mude a versão (ex: 'v4') sempre que atualizar os arquivos para forçar a atualização.
-const CACHE_NAME = 'concentrare-v3';
+const CACHE_NAME = 'concentrare-v5'; // Aumentamos a versão para forçar a atualização do cache
 
-// Lista de todos os arquivos essenciais para o funcionamento offline.
+// Lista de arquivos locais para o funcionamento offline.
 const FILES_TO_CACHE = [
     '/',
     'index.html',
     'manifest.json',
+    // Arquivos CSS
     'css/style.css',
+    'css/bootstrap.min.css',
+    'css/bootstrap-icons.min.css',
+    'css/fonts.css',
     // Módulos JavaScript
     'js/main.js',
     'js/audio.js',
@@ -14,12 +17,20 @@ const FILES_TO_CACHE = [
     'js/state.js',
     'js/timer.js',
     'js/ui.js',
+    'js/bootstrap.bundle.min.js',
     // Ícones do PWA
     'assets/images/icon-192x192.png',
     'assets/images/icon-512x512.png',
     'assets/images/icon-maskable-512x512.png',
     'assets/images/shortcut-focus.png',
     'assets/images/shortcut-short-break.png',
+    // Fontes
+    'assets/fonts/bootstrap-icons.woff2',
+    'assets/fonts/XRXV3I6Li01BKofIMeaBXso.woff2',
+    'assets/fonts/XRXV3I6Li01BKofINeaB.woff2',
+    'assets/fonts/XRXV3I6Li01BKofIO-aBXso.woff2',
+    'assets/fonts/XRXV3I6Li01BKofIOOaBXso.woff2',
+    'assets/fonts/XRXV3I6Li01BKofIOuaBXso.woff2',
     // Sons de Alarme
     'assets/sounds/notification.mp3',
     'assets/sounds/digital.mp3',
@@ -30,15 +41,11 @@ const FILES_TO_CACHE = [
     'assets/sounds/ambient/heavy-rain.mp3',
     'assets/sounds/ambient/night-forest.mp3',
     'assets/sounds/ambient/library.mp3',
+    'assets/sounds/ambient/beach.mp3',
     'assets/sounds/ambient/brown-noise.mp3',
-    // Dependências Externas (CDNs)
-    'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
-    'https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css',
-    'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js',
-    'https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap'
+    'assets/sounds/ambient/lo-fi.mp3'
 ];
 
-// Evento 'install': Salva os arquivos essenciais no cache.
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
@@ -49,7 +56,6 @@ self.addEventListener('install', (event) => {
     self.skipWaiting();
 });
 
-// Evento 'activate': Limpa os caches antigos.
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
@@ -66,13 +72,10 @@ self.addEventListener('activate', (event) => {
     return self.clients.claim();
 });
 
-// Evento 'fetch': Intercepta as requisições de rede.
 self.addEventListener('fetch', (event) => {
-    // Não tentamos fazer cache de requisições do YouTube ou de anúncios
-    if (event.request.url.includes('youtube.com') || event.request.url.includes('googlevideo.com') || event.request.url.includes('googleads')) {
-        return;
+    if (event.request.url.includes('youtube.com') || event.request.url.includes('googlevideo.com')) {
+        return; // Ignora as requisições do YouTube, que precisam de rede
     }
-
     event.respondWith(
         caches.match(event.request).then((response) => {
             return response || fetch(event.request);
