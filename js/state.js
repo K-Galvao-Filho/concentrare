@@ -1,3 +1,5 @@
+// Guarda todas as variáveis de estado da aplicação.
+
 export let timer;
 export let isRunning = false;
 export let currentMode = 'pomodoro';
@@ -6,13 +8,17 @@ export let pomodorosCompletedInCycle = 0;
 export let currentCycle = 1;
 export let tasks = [];
 export let settings = {
-    pomodoro: 25, shortBreak: 5, longBreak: 15,
-    pomodorosPerCycle: 4, totalCycles: 1, 
+    pomodoro: 25, 
+    shortBreak: 5, 
+    longBreak: 15,
+    pomodorosPerCycle: 4, 
+    totalCycles: 1, 
     alarmSound: 'notification1',
     ambientSound: 'none',
     autoStartBreaks: true
 };
 
+// Funções para modificar o estado de forma controlada
 export function setTimer(newTimer) { timer = newTimer; }
 export function setIsRunning(running) { isRunning = running; }
 export function setCurrentMode(mode) { currentMode = mode; }

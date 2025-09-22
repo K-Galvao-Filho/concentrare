@@ -1,3 +1,4 @@
+// Centraliza a seleção de todos os elementos do DOM.
 export const pomodoroWidget = document.getElementById('pomodoro-container');
 export const timerDisplay = document.getElementById('timer-display');
 export const modeButtons = document.querySelectorAll('.mode-btn');
@@ -42,7 +43,10 @@ export const inputs = {
     totalCycles: document.getElementById('total-cycles')
 };
 
+// Valores calculados a partir do DOM para o anel de progresso
 export const radius = progressRing.r.baseVal.value;
 export const circumference = 2 * Math.PI * radius;
+
+// Define os atributos iniciais do anel de progresso
 progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
 progressRing.style.strokeDashoffset = circumference;

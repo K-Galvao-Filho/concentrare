@@ -6,13 +6,14 @@ let audioBuffers = new Map();
 let currentAmbientSource = null;
 let isAudioInitialized = false;
 
-// A função de criação do player agora é EXPORTADA
+// --- LÓGICA DA API DO YOUTUBE ---
+// Esta função é chamada globalmente pelo script do YouTube
 export function initializeYouTubeAPI() {
     const currentOrigin = window.location.origin;
     youtubePlayer = new YT.Player('youtube-player', {
         height: '150',
         width: '100%',
-        videoId: 'jfKfPfyJRdk', 
+        videoId: 'jfKfPfyJRdk', // Vídeo padrão
         playerVars: {
             'autoplay': 0,
             'controls': 1,
@@ -32,6 +33,7 @@ function playYoutubeMusic(videoId) {
     if (youtubePlayer && typeof youtubePlayer.loadVideoById === 'function') {
         youtubePlayer.loadVideoById(videoId);
     } else if (youtubePlayer && typeof youtubePlayer.playVideo === 'function') {
+        // Fallback se o player já estiver carregado com o vídeo certo
         youtubePlayer.playVideo();
     }
 }
@@ -42,10 +44,12 @@ function pauseYoutubeMusic() {
     }
 }
 
+// --- LÓGICA DA WEB AUDIO API ---
 export function initAudio() {
     if (isAudioInitialized) return;
     try {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        // Destrava os sons de ALARME (que ainda são tags <audio>)
         document.querySelectorAll('audio').forEach(sound => {
             sound.play().catch(() => {});
             sound.pause();
@@ -63,7 +67,7 @@ async function getAudioBuffer(soundId) {
         const response = await fetch(`assets/sounds/ambient/${soundId}.mp3`);
         const arrayBuffer = await response.arrayBuffer();
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-        audioBuffers.set(soundId, audioBuffer);
+        audioBuffers.set(soundId, audioBuffer); // Salva no cache
         return audioBuffer;
     } catch (error) { console.error(`Erro ao carregar o som ${soundId}:`, error); return null; }
 }
@@ -74,7 +78,7 @@ async function playAmbientSound(soundId) {
     if (!buffer) return;
     const source = audioContext.createBufferSource();
     source.buffer = buffer;
-    source.loop = true;
+    source.loop = true; // Loop perfeito
     source.connect(audioContext.destination);
     source.start(0);
     currentAmbientSource = source;
@@ -87,6 +91,7 @@ function stopAmbientSound() {
     }
 }
 
+// --- FUNÇÕES MESTRE DE CONTROLE ---
 export function playSelectedSound(soundId) {
     stopAllSounds();
     if (soundId.startsWith('youtube_')) {

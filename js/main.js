@@ -4,6 +4,8 @@ import * as ui from './ui.js';
 import * as timer from './timer.js';
 import { initAudio, playSelectedSound } from './audio.js';
 
+// Arquivo principal que inicializa a aplicação e conecta os event listeners.
+
 function requestNotificationPermission() {
     if ('Notification' in window && Notification.permission !== 'granted') {
         Notification.requestPermission();

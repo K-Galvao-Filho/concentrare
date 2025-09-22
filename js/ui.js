@@ -1,11 +1,13 @@
 import * as dom from './dom.js';
 import * as state from './state.js';
 
+// Funções que atualizam a interface do usuário.
+
 export function updateTimerDisplay() {
     const minutes = Math.floor(state.timeLeft / 60);
     const seconds = state.timeLeft % 60;
     dom.timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    document.title = `${dom.timerDisplay.textContent} - Pomodoro`;
+    document.title = `${dom.timerDisplay.textContent} - CONCENTRARE`;
 }
 
 export function setProgress(percent) {
