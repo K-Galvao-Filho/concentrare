@@ -1,4 +1,3 @@
-// js/audio.js
 import * as dom from './dom.js';
 
 let youtubePlayer;
@@ -7,25 +6,14 @@ let audioBuffers = new Map();
 let currentAmbientSource = null;
 let isAudioInitialized = false;
 
-// --- LÓGICA DA API DO YOUTUBE ---
 window.onYouTubeIframeAPIReady = function() {
-    // ESTA É A CORREÇÃO PRINCIPAL:
-    // Pega a URL exata em que o site está rodando (seja localhost, github ou vercel)
     const currentOrigin = window.location.origin;
-
     youtubePlayer = new YT.Player('youtube-player', {
         height: '150',
         width: '100%',
         videoId: 'jfKfPfyJRdk', 
-        playerVars: {
-            'autoplay': 0,
-            'controls': 1,
-            // E a envia para o YouTube para autorização
-            'origin': currentOrigin 
-        },
-        events: {
-            'onReady': onPlayerReady
-        }
+        playerVars: { 'autoplay': 0, 'controls': 1, 'origin': currentOrigin },
+        events: { 'onReady': onPlayerReady }
     });
 }
 
@@ -47,7 +35,6 @@ function pauseYoutubeMusic() {
     }
 }
 
-// --- LÓGICA DA WEB AUDIO API ---
 export function initAudio() {
     if (isAudioInitialized) return;
     try {
@@ -93,7 +80,6 @@ function stopAmbientSound() {
     }
 }
 
-// --- FUNÇÕES MESTRE DE CONTROLE ---
 export function playSelectedSound(soundId) {
     stopAllSounds();
     if (soundId.startsWith('youtube_')) {

@@ -3,8 +3,6 @@ import * as ui from './ui.js';
 import * as dom from './dom.js';
 import { playSelectedSound, stopAllSounds } from './audio.js';
 
-// --- FUNÇÕES DE LÓGICA DO TIMER ---
-
 function updatePomodoroHistory() {
     const history = JSON.parse(localStorage.getItem('pomodoroHistory')) || {};
     const today = new Date().toISOString().slice(0, 10);
@@ -21,10 +19,7 @@ function sendNotification(title, body) {
 export function handleTimerEnd() {
     pauseTimer();
     const alarm = document.getElementById(state.settings.alarmSound);
-    if (alarm) {
-        alarm.currentTime = 0;
-        alarm.play().catch(error => console.error("Erro ao tocar alarme:", error));
-    }
+    if (alarm) { alarm.play().catch(error => console.error("Erro ao tocar alarme:", error)); }
     dom.pomodoroWidget.classList.add('timer-ended-flash');
 
     if (state.currentMode === 'pomodoro') {
@@ -34,7 +29,7 @@ export function handleTimerEnd() {
         let nextMode;
         if (state.pomodorosCompletedInCycle >= state.settings.pomodorosPerCycle) {
             if (state.currentCycle >= state.settings.totalCycles) {
-                sendNotification("Ciclos completos!", "Bom trabalho! Você completou todos os seus ciclos.");
+                sendNotification("Ciclos completos!", "Bom trabalho!");
                 resetApp(); 
                 return;
             }
@@ -55,8 +50,7 @@ export function handleTimerEnd() {
             sendNotification("Sessão de Foco Concluída!", "Clique em INICIAR para começar sua pausa.");
             dom.startBtn.innerHTML = '<i class="bi bi-play-fill"></i> INICIAR PAUSA';
         }
-
-    } else { // Se uma pausa terminou
+    } else {
         sendNotification("De volta ao Foco!", `Vamos para mais ${state.settings.pomodoro} minutos de trabalho.`);
         switchMode('pomodoro');
         setTimeout(startTimer, 1000);
@@ -71,11 +65,9 @@ export function startTimer() {
     ui.updateControlButtons();
     dom.favicon.href = dom.favicons.playing;
     ui.announce("Timer iniciado.");
-    
     if (state.currentMode === 'pomodoro') {
         playSelectedSound(state.settings.ambientSound);
     }
-
     const totalTime = state.settings[state.currentMode] * 60;
     const newTimer = setInterval(() => {
         state.setTimeLeft(state.timeLeft - 1);

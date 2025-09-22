@@ -1,9 +1,5 @@
-// js/ui.js
-
 import * as dom from './dom.js';
 import * as state from './state.js';
-
-// Funções que atualizam a interface do usuário.
 
 export function updateTimerDisplay() {
     const minutes = Math.floor(state.timeLeft / 60);
@@ -57,7 +53,7 @@ export function setupTheme() {
 
 export function toggleTheme() {
     const isDark = document.body.classList.toggle('theme-dark');
-    localStorage.setItem('pomodoroTheme', isDark ? 'light' : 'light');
+    localStorage.setItem('pomodoroTheme', isDark ? 'dark' : 'light');
     dom.themeToggleBtn.innerHTML = isDark ? '<i class="bi bi-sun-fill"></i>' : '<i class="bi bi-moon-stars-fill"></i>';
 }
 

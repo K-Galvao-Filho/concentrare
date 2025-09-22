@@ -1,6 +1,3 @@
-// js/dom.js
-
-// Centraliza a seleção de todos os elementos do DOM.
 export const pomodoroWidget = document.getElementById('pomodoro-container');
 export const timerDisplay = document.getElementById('timer-display');
 export const modeButtons = document.querySelectorAll('.mode-btn');

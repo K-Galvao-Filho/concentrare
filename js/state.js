@@ -1,5 +1,3 @@
-// Guarda todas as variáveis de estado da aplicação.
-
 export let timer;
 export let isRunning = false;
 export let currentMode = 'pomodoro';
@@ -15,7 +13,6 @@ export let settings = {
     autoStartBreaks: true
 };
 
-// Funções para modificar o estado (uma abordagem mais avançada, mas útil)
 export function setTimer(newTimer) { timer = newTimer; }
 export function setIsRunning(running) { isRunning = running; }
 export function setCurrentMode(mode) { currentMode = mode; }
