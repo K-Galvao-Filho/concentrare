@@ -30,6 +30,7 @@ export const taskList = document.getElementById('task-list');
 export const taskSummary = document.getElementById('task-summary');
 export const alarmSoundSelect = document.getElementById('alarm-sound-select');
 export const autoStartBreaksSwitch = document.getElementById('auto-start-breaks-switch');
+export const clearCompletedBtn = document.getElementById('clear-completed-btn');
 export const statsModalEl = document.getElementById('statsModal');
 export const statsModal = new bootstrap.Modal(statsModalEl);
 export const statsToday = document.getElementById('stats-today');

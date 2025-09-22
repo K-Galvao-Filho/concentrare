@@ -1,8 +1,6 @@
 import * as dom from './dom.js';
 import * as state from './state.js';
 
-// Funções que atualizam a interface do usuário.
-
 export function updateTimerDisplay() {
     const minutes = Math.floor(state.timeLeft / 60);
     const seconds = state.timeLeft % 60;
@@ -33,7 +31,10 @@ export function renderTasks() {
     state.tasks.forEach(task => {
         const li = document.createElement('li');
         li.dataset.id = task.id;
+        li.draggable = true;
+        
         li.innerHTML = `<input type="checkbox" ${task.completed ? 'checked' : ''}><span class="task-text ${task.completed ? 'completed' : ''}">${task.text}</span><button class="delete-task-btn" aria-label="Deletar Tarefa"><i class="bi bi-trash"></i></button>`;
+        
         dom.taskList.appendChild(li);
         if (task.completed) completedCount++;
     });

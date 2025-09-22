@@ -4,8 +4,6 @@ import * as ui from './ui.js';
 import * as timer from './timer.js';
 import { initAudio, playSelectedSound } from './audio.js';
 
-// Arquivo principal que inicializa a aplicação e conecta os event listeners.
-
 function requestNotificationPermission() {
     if ('Notification' in window && Notification.permission !== 'granted') {
         Notification.requestPermission();
@@ -87,6 +85,12 @@ function init() {
     document.addEventListener('keydown', handleKeyPress);
     dom.statsModalEl.addEventListener('show.bs.modal', ui.renderStats);
     dom.pomodoroWidget.addEventListener('animationend', () => dom.pomodoroWidget.classList.remove('timer-ended-flash'));
+    dom.clearCompletedBtn.addEventListener('click', () => {
+        const newTasks = state.tasks.filter(task => !task.completed);
+        state.setTasks(newTasks);
+        saveTasks();
+        ui.renderTasks();
+    });
 
     dom.ambientSoundSelect.addEventListener('change', () => {
         const newSettings = { ...state.settings, ambientSound: dom.ambientSoundSelect.value };
@@ -123,13 +127,92 @@ function init() {
                 task.id === id ? { ...task, completed: e.target.checked } : task
             );
             state.setTasks(newTasks);
+            saveTasks();
+            ui.renderTasks();
         } else if (e.target.closest('.delete-task-btn')) {
-            const newTasks = state.tasks.filter(t => t.id !== id);
-            state.setTasks(newTasks);
+            li.classList.add('fading-out');
+            setTimeout(() => {
+                const newTasks = state.tasks.filter(t => t.id !== id);
+                state.setTasks(newTasks);
+                saveTasks();
+                ui.renderTasks();
+            }, 300);
         }
-        saveTasks();
-        ui.renderTasks();
     });
+
+    dom.taskList.addEventListener('dblclick', (e) => {
+        if (e.target.classList.contains('task-text')) {
+            const li = e.target.closest('li');
+            const id = parseInt(li.dataset.id);
+            const task = state.tasks.find(t => t.id === id);
+            
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.value = task.text;
+            input.classList.add('task-edit-input');
+            
+            e.target.replaceWith(input);
+            input.focus();
+            
+            const saveEdit = () => {
+                const newText = input.value.trim();
+                const newTasks = state.tasks.map(t =>
+                    t.id === id ? { ...t, text: newText || task.text } : t
+                );
+                state.setTasks(newTasks);
+                saveTasks();
+                ui.renderTasks();
+            };
+            
+            input.addEventListener('blur', saveEdit);
+            input.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') input.blur();
+                if (event.key === 'Escape') ui.renderTasks();
+            });
+        }
+    });
+    
+    let draggedItem = null;
+    dom.taskList.addEventListener('dragstart', (e) => {
+        draggedItem = e.target;
+        setTimeout(() => e.target.classList.add('dragging'), 0);
+    });
+    
+    dom.taskList.addEventListener('dragend', (e) => {
+        e.target.classList.remove('dragging');
+        draggedItem = null;
+    });
+
+    dom.taskList.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        const afterElement = getDragAfterElement(dom.taskList, e.clientY);
+        const currentDragged = document.querySelector('.dragging');
+        if (afterElement == null) {
+            dom.taskList.appendChild(currentDragged);
+        } else {
+            dom.taskList.insertBefore(currentDragged, afterElement);
+        }
+    });
+    
+    dom.taskList.addEventListener('drop', () => {
+        const newOrderIds = Array.from(dom.taskList.querySelectorAll('li')).map(li => parseInt(li.dataset.id));
+        const newTasks = newOrderIds.map(id => state.tasks.find(task => task.id === id));
+        state.setTasks(newTasks);
+        saveTasks();
+    });
+
+    function getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll('li:not(.dragging)')];
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
     
     timer.switchMode('pomodoro');
     ui.updateCounters();

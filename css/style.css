@@ -76,6 +76,7 @@ body {
     max-width: 1000px;
     margin: 0 auto;
     padding: 0 1rem;
+    align-items: stretch; /* Garante que os cards tenham a mesma altura */
 }
 
 /* Estilo base para os cards (widgets) */
@@ -89,7 +90,6 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 100%;
 }
 
 /* --- Estilos dos componentes internos --- */
@@ -152,18 +152,48 @@ body {
 .visually-hidden { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); border: 0; }
 .task-header { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
 .task-header h3 { font-size: 1.2rem; font-weight: 700; color: var(--header-text-color); margin: 0; }
-.task-summary { font-size: 0.9rem; font-weight: 600; background-color: var(--active-mode-bg); color: var(--header-text-color); padding: 0.2rem 0.6rem; border-radius: 10px; }
+
+.clear-btn {
+    background: none;
+    border: none;
+    color: var(--main-text-color);
+    font-size: 0.8rem;
+    font-weight: 600;
+    opacity: 0.7;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+.clear-btn:hover {
+    opacity: 1;
+}
+
 .task-list { width: 100%; list-style: none; padding: 0; margin: 0 0 1rem 0; max-height: 280px; overflow-y: auto; }
-.task-list li { display: flex; align-items: center; padding: 0.8rem 0.5rem; border-bottom: 1px solid var(--border-color); }
+.task-list li { display: flex; align-items: center; padding: 0.8rem 0.5rem; border-bottom: 1px solid var(--border-color); animation: fadeIn 0.4s ease forwards; }
+.task-list li.fading-out { animation: fadeOut 0.3s ease forwards; }
+.task-list li.dragging { opacity: 0.5; background-color: var(--active-mode-bg); }
 .task-list li:last-child { border-bottom: none; }
 .task-list input[type="checkbox"] { margin-right: 1rem; width: 18px; height: 18px; }
-.task-list .task-text { flex-grow: 1; transition: color 0.3s; }
+.task-list .task-text { flex-grow: 1; transition: color 0.3s; cursor: pointer; }
 .task-list .task-text.completed { text-decoration: line-through; color: var(--main-text-color); opacity: 0.6; }
+.task-edit-input { flex-grow: 1; border: none; background-color: var(--bg-color); color: var(--header-text-color); padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: 1.5rem; outline: 2px solid var(--accent-color); }
 .task-list .delete-task-btn { background: none; border: none; color: var(--main-text-color); opacity: 0.5; cursor: pointer; transition: opacity 0.2s; }
 .task-list .delete-task-btn:hover { opacity: 1; color: #ef5350; }
 .task-form { width: 100%; display: flex; gap: 0.5rem; margin-top: auto; }
 .task-form input { flex-grow: 1; border: 1px solid var(--border-color); background-color: var(--bg-color); color: var(--header-text-color); padding: 0.5rem 1rem; border-radius: 8px; }
 .task-form button { background-color: var(--accent-color); border: none; color: white; border-radius: 8px; width: 40px; height: 40px; cursor: pointer; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; transform: scale(1); }
+    to { opacity: 0; transform: scale(0.95); height: 0; padding: 0; margin: 0; }
+}
 
 @media (max-width: 850px) {
     .content-wrapper { flex-direction: column; align-items: center; }
