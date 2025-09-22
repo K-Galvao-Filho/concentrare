@@ -1,5 +1,5 @@
 // js/audio.js
-import * as dom from './dom.js';
+import * in dom from './dom.js';
 
 let youtubePlayer;
 let audioContext;
@@ -9,7 +9,8 @@ let isAudioInitialized = false;
 
 // --- LÓGICA DA API DO YOUTUBE ---
 window.onYouTubeIframeAPIReady = function() {
-    // ATUALIZAÇÃO IMPORTANTE AQUI
+    // ESTA É A CORREÇÃO PRINCIPAL:
+    // Pega a URL exata em que o site está rodando (seja localhost, github ou vercel)
     const currentOrigin = window.location.origin;
 
     youtubePlayer = new YT.Player('youtube-player', {
@@ -19,7 +20,8 @@ window.onYouTubeIframeAPIReady = function() {
         playerVars: {
             'autoplay': 0,
             'controls': 1,
-            'origin': currentOrigin // <-- ADICIONADO: Diz ao YouTube qual é o nosso site
+            // E a envia para o YouTube para autorização
+            'origin': currentOrigin 
         },
         events: {
             'onReady': onPlayerReady
