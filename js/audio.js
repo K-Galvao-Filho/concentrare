@@ -1,5 +1,5 @@
 // js/audio.js
-import * in dom from './dom.js';
+import * as dom from './dom.js';
 
 let youtubePlayer;
 let audioContext;
