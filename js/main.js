@@ -69,14 +69,18 @@ function loadSettings() {
     const savedSettings = localStorage.getItem('pomodoroSettings');
     if (savedSettings) {
         const loaded = JSON.parse(savedSettings);
+        // Garante que novas configurações tenham valores padrão se não estiverem salvas
         const newSettings = { ...state.settings, ...loaded };
         state.setSettings(newSettings);
     }
+
+    // Aplica os valores do estado aos elementos da interface
     dom.inputs.pomodoro.value = state.settings.pomodoro;
     dom.inputs.shortBreak.value = state.settings.shortBreak;
     dom.inputs.longBreak.value = state.settings.longBreak;
     dom.inputs.pomodorosPerCycle.value = state.settings.pomodorosPerCycle;
     dom.inputs.totalCycles.value = state.settings.totalCycles;
+    
     dom.alarmSoundSelect.value = state.settings.alarmSound;
     dom.autoStartBreaksSwitch.checked = state.settings.autoStartBreaks;
     dom.autoStartPomodorosSwitch.checked = state.settings.autoStartPomodoros;
@@ -84,10 +88,15 @@ function loadSettings() {
     dom.tickingSoundSwitch.checked = state.settings.tickingSoundEnabled;
     dom.strictTaskModeSwitch.checked = state.settings.strictTaskMode;
     dom.onTaskCompletedActionSelect.value = state.settings.onTaskCompletedAction;
+    
     dom.alarmVolumeSlider.value = state.settings.alarmVolume;
     dom.ambientVolumeSlider.value = state.settings.ambientVolume;
     
+    dom.ambientSoundSelect.value = state.settings.ambientSound;
+    
     audio.updateAmbientVolume();
+
+    // Garante que o player do YouTube só seja exibido se um som do YouTube estiver selecionado
     dom.youtubePlayerContainer.classList.toggle('hidden', state.settings.ambientSound.startsWith('youtube_') === false);
 }
 
