@@ -21,19 +21,82 @@ export function updateControlButtons() {
 }
 
 export function updateCounters() {
-    dom.pomodoroCounterDisplay.textContent = `Pomodoro: ${state.pomodorosCompletedInCycle} / ${state.settings.pomodorosPerCycle}`;
-    dom.cycleCounterDisplay.textContent = `Ciclo: ${state.currentCycle} / ${state.settings.totalCycles}`;
+    const activeTask = state.activeTaskId ? state.tasks.find(t => t.id === state.activeTaskId) : null;
+
+    let pomodoroCurrent;
+    let pomodoroTotal;
+    let pomodoroDisplayNumber;
+    let cycleDisplayNumber = state.currentCycle;
+
+    if (activeTask) {
+        dom.cycleCounterDisplay.style.display = 'none';
+        pomodoroTotal = activeTask.pomodorosEst;
+        pomodoroCurrent = activeTask.pomodorosDone;
+    } else {
+        dom.cycleCounterDisplay.style.display = 'inline';
+        pomodoroTotal = state.settings.pomodorosPerCycle;
+        pomodoroCurrent = state.pomodorosCompletedInCycle;
+    }
+
+    pomodoroDisplayNumber = pomodoroCurrent;
+    if (state.currentMode === 'pomodoro' && pomodoroCurrent < pomodoroTotal) {
+        pomodoroDisplayNumber = pomodoroCurrent + 1;
+    }
+    
+    if (state.currentMode === 'longBreak' && !activeTask) {
+        pomodoroDisplayNumber = pomodoroTotal;
+    }
+    
+    if (state.currentMode === 'longBreak' && state.currentCycle > 1) {
+        cycleDisplayNumber = state.currentCycle - 1;
+    }
+
+    dom.pomodoroCounterDisplay.textContent = `Pomodoro: ${pomodoroDisplayNumber} / ${pomodoroTotal}`;
+    dom.cycleCounterDisplay.textContent = `Ciclo: ${cycleDisplayNumber} / ${state.settings.totalCycles}`;
 }
 
 export function renderTasks() {
     dom.taskList.innerHTML = '';
     let completedCount = 0;
     state.tasks.forEach(task => {
+        let displayPomodorosDone = task.pomodorosDone;
+
+        const isTaskActive = task.id === state.activeTaskId;
+
+        if (isTaskActive && state.currentMode === 'longBreak') {
+            displayPomodorosDone = task.pomodorosEst;
+        } else {
+            const isTaskActiveAndInProgress = 
+                isTaskActive &&
+                state.currentMode === 'pomodoro' &&
+                task.pomodorosDone < task.pomodorosEst;
+
+            if (isTaskActiveAndInProgress) {
+                displayPomodorosDone++;
+            }
+        }
+
         const li = document.createElement('li');
         li.dataset.id = task.id;
         li.draggable = true;
         
-        li.innerHTML = `<input type="checkbox" ${task.completed ? 'checked' : ''}><span class="task-text ${task.completed ? 'completed' : ''}">${task.text}</span><button class="delete-task-btn" aria-label="Deletar Tarefa"><i class="bi bi-trash"></i></button>`;
+        if(isTaskActive) {
+            li.classList.add('active-task');
+        }
+        
+        li.innerHTML = `
+            <input type="checkbox" ${task.completed ? 'checked' : ''}>
+            <span class="task-text ${task.completed ? 'completed' : ''}">${task.text}</span>
+            <div class="task-controls">
+                <span class="task-pomodoro-count">${displayPomodorosDone} / ${task.pomodorosEst}</span>
+                <button class="set-active-task-btn" title="Marcar como tarefa ativa">
+                    <i class="bi bi-bullseye"></i>
+                </button>
+                <button class="delete-task-btn" aria-label="Deletar Tarefa" title="Deletar tarefa">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </div>
+        `;
         
         dom.taskList.appendChild(li);
         if (task.completed) completedCount++;
@@ -58,6 +121,27 @@ export function toggleTheme() {
     const isDark = document.body.classList.toggle('theme-dark');
     localStorage.setItem('pomodoroTheme', isDark ? 'dark' : 'light');
     dom.themeToggleBtn.innerHTML = isDark ? '<i class="bi bi-sun-fill"></i>' : '<i class="bi bi-moon-stars-fill"></i>';
+}
+
+export function updateStartButtonState() {
+    const hasIncompleteTasks = state.tasks.some(task => !task.completed);
+    let isDisabled = false;
+    let title = "";
+
+    if (state.settings.strictTaskMode) {
+        if (!hasIncompleteTasks) {
+            // Se não há tarefas incompletas, desabilita.
+            isDisabled = true;
+            title = "Todas as tarefas foram concluídas!";
+        } else if (state.activeTaskId === null) {
+            // Se há tarefas, mas nenhuma está selecionada, desabilita.
+            isDisabled = true;
+            title = "Selecione uma tarefa para iniciar";
+        }
+    }
+    
+    dom.startBtn.disabled = isDisabled;
+    dom.startBtn.title = title;
 }
 
 export function announce(message) {

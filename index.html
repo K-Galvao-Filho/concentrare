@@ -86,59 +86,173 @@
                 <h3>Tarefas</h3>
                 <span id="task-summary">0 / 0</span>
                 <button id="clear-completed-btn" class="clear-btn" title="Limpar tarefas concluídas">
-                    <i class="bi bi-trash"></i> Limpar
+                    <i class="bi bi-trash"></i> Limpar Concluídas
                 </button>
             </div>
             <ul id="task-list" class="task-list"></ul>
             <form id="task-form" class="task-form">
-                <input type="text" id="task-input" placeholder="Adicionar uma tarefa..." autocomplete="off">
+                <div class="form-group task-input-group">
+                    <label for="task-input">O que você está focando?</label>
+                    <input type="text" id="task-input" placeholder="Ex: Criar novo layout" autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="task-pomodoro-estimate">Pomodoros</label>
+                    <input type="number" id="task-pomodoro-estimate" min="1" max="10" value="1" title="Estimativa de Pomodoros">
+                </div>
                 <button type="submit" aria-label="Adicionar Tarefa"><i class="bi bi-plus-lg"></i></button>
             </form>
         </section>
     </div>
 
-    <div class="modal fade" id="settingsModal" tabindex="-1" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Configurações</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <h6>Duração (minutos)</h6>
-            <div class="row g-3">
-                <div class="col"><label for="pomodoro-time" class="form-label">Pomodoro</label><input type="number" class="form-control" id="pomodoro-time" min="1"></div>
-                <div class="col"><label for="short-break-time" class="form-label">Pausa Curta</label><input type="number" class="form-control" id="short-break-time" min="1"></div>
-                <div class="col"><label for="long-break-time" class="form-label">Pausa Longa</label><input type="number" class="form-control" id="long-break-time" min="1"></div>
+    <div class="modal fade" id="statsModal" tabindex="-1" aria-labelledby="statsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="statsModalLabel">Relatórios</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Pomodoros concluídos hoje: <strong id="stats-today">0</strong></p>
+                    <p>Total de pomodoros concluídos: <strong id="stats-total">0</strong></p>
+                </div>
             </div>
-            <hr>
-            <h6>Organização e Comportamento</h6>
-            <div class="row g-3">
-                <div class="col-sm-6"><label for="pomodoros-per-cycle" class="form-label">Pomodoros por Ciclo</label><input type="number" class="form-control" id="pomodoros-per-cycle" min="1"></div>
-                <div class="col-sm-6"><label for="total-cycles" class="form-label">Total de Ciclos</label><input type="number" class="form-control" id="total-cycles" min="1"></div>
-            </div>
-            <div class="form-check form-switch mt-3">
-              <input class="form-check-input" type="checkbox" role="switch" id="auto-start-breaks-switch" checked>
-              <label class="form-check-label" for="auto-start-breaks-switch">Iniciar pausas automaticamente</label>
-            </div>
-            <hr>
-            <h6>Sons</h6>
-            <div class="row g-3">
-                <div class="col"><label for="alarm-sound-select" class="form-label">Alarme</label><select id="alarm-sound-select" class="form-select"><option value="notification1">Notificação</option><option value="notification2">Digital</option><option value="bell">Sino</option></select></div>
-            </div>
-          </div>
-          <div class="modal-footer"><button type="button" class="btn btn-primary" id="save-settings-btn">Salvar</button></div>
         </div>
-      </div>
-    </div>
-    
-    <div class="modal fade" id="statsModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title">Relatórios</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body text-center"><h5>Pomodoros Concluídos</h5><div class="stats-group"><p class="stats-value" id="stats-today">0</p><p class="stats-label">Hoje</p></div><div class="stats-group"><p class="stats-value" id="stats-total">0</p><p class="stats-label">Total</p></div></div></div></div>
     </div>
 
-    <audio id="notification1" src="assets/sounds/notification.mp3" preload="auto"></audio>
-    <audio id="notification2" src="assets/sounds/digital.mp3" preload="auto"></audio>
+    <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="settingsModalLabel">Configurações</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="bi bi-clock-history"></i> Duração (minutos)</h6>
+                            <div class="mb-3">
+                                <label for="pomodoro-time" class="form-label">Pomodoro</label>
+                                <input type="number" class="form-control" id="pomodoro-time" value="25">
+                            </div>
+                            <div class="mb-3">
+                                <label for="short-break-time" class="form-label">Pausa Curta</label>
+                                <input type="number" class="form-control" id="short-break-time" value="5">
+                            </div>
+                            <div class="mb-3">
+                                <label for="long-break-time" class="form-label">Pausa Longa</label>
+                                <input type="number" class="form-control" id="long-break-time" value="15">
+                            </div>
+                            <hr>
+                            <h6><i class="bi bi-arrow-repeat"></i> Ciclos</h6>
+                            <div class="mb-3">
+                                <label for="pomodoros-per-cycle" class="form-label">Pomodoros por Ciclo</label>
+                                <input type="number" class="form-control" id="pomodoros-per-cycle" value="4">
+                            </div>
+                             <div class="mb-3">
+                                <label for="total-cycles" class="form-label">Total de Ciclos (Modo Padrão)</label>
+                                <input type="number" class="form-control" id="total-cycles" value="1">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="bi bi-sliders"></i> Comportamento e Automação</h6>
+                            <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" role="switch" id="auto-start-breaks-switch">
+                                <label class="form-check-label" for="auto-start-breaks-switch">Iniciar pausas automaticamente</label>
+                            </div>
+                            <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" role="switch" id="auto-start-pomodoros-switch">
+                                <label class="form-check-label" for="auto-start-pomodoros-switch">Iniciar pomodoros automaticamente</label>
+                            </div>
+                             <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" role="switch" id="strict-task-mode-switch">
+                                <label class="form-check-label" for="strict-task-mode-switch">Exigir tarefa ativa para iniciar</label>
+                            </div>
+                            <div class="mb-3">
+                                <label for="on-task-completed-action-select" class="form-label">Ao concluir uma tarefa:</label>
+                                <select id="on-task-completed-action-select" class="form-select">
+                                    <option value="ask">Perguntar o que fazer</option>
+                                    <option value="startNext">Iniciar próxima tarefa</option>
+                                    <option value="revertToStandard">Voltar ao modo padrão</option>
+                                </select>
+                            </div>
+                            <hr>
+                            <h6><i class="bi bi-volume-up"></i> Áudio e Notificações</h6>
+                             <div class="form-check form-switch mb-3">
+                                <input class="form-check-input" type="checkbox" role="switch" id="browser-notifications-switch" checked>
+                                <label class="form-check-label" for="browser-notifications-switch">Ativar notificações do navegador</label>
+                            </div>
+                            <div class="mb-3">
+                                <label for="alarm-sound-select" class="form-label">Som do Alarme</label>
+                                <select id="alarm-sound-select" class="form-select">
+                                    <option value="none">Silencioso</option>
+                                    <option value="notification">Notificação</option>
+                                    <option value="digital">Digital</option>
+                                    <option value="bell">Sino</option>
+                                </select>
+                            </div>
+                             <div class="mb-3">
+                                <label for="alarm-volume-slider" class="form-label">Volume do Alarme</label>
+                                <input type="range" class="form-range" id="alarm-volume-slider" min="0" max="1" step="0.1" value="1">
+                            </div>
+                             <div class="mb-3">
+                                <label for="ambient-volume-slider" class="form-label">Volume do Som Ambiente</label>
+                                <input type="range" class="form-range" id="ambient-volume-slider" min="0" max="1" step="0.1" value="0.5">
+                            </div>
+                             <div class="form-check form-switch mb-2">
+                                <input class="form-check-input" type="checkbox" role="switch" id="ticking-sound-switch">
+                                <label class="form-check-label" for="ticking-sound-switch">Ativar som de tic-tac durante o foco</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" id="save-settings-btn">Salvar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="taskCompletedModal" tabindex="-1" aria-labelledby="taskCompletedModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="taskCompletedModalLabel">Tarefa Concluída!</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Ótimo trabalho! Você completou a tarefa "<strong id="completed-task-name">Nome da Tarefa</strong>".</p>
+                    <p>O que você gostaria de fazer a seguir, após sua pausa?</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-primary" id="start-next-task-btn">Iniciar Próxima Tarefa</button>
+                    <button type="button" class="btn btn-secondary" id="return-to-standard-btn">Continuar em Modo Padrão</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="restartTaskModal" tabindex="-1" aria-labelledby="restartTaskModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="restartTaskModalLabel">Reiniciar Tarefa?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Esta tarefa já está marcada como concluída. Deseja zerar seu progresso e iniciá-la novamente?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" id="confirm-restart-btn">Sim, Reiniciar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <audio id="notification" src="assets/sounds/notification.mp3" preload="auto"></audio>
+    <audio id="digital" src="assets/sounds/digital.mp3" preload="auto"></audio>
     <audio id="bell" src="assets/sounds/bell.mp3" preload="auto"></audio>
+    <audio id="ticking-sound" src="assets/sounds/tick-tock.mp3" loop preload="auto"></audio>
 
     <script>
         function onYouTubeIframeAPIReady() {

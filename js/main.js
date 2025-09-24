@@ -2,7 +2,16 @@ import * as state from './state.js';
 import * as dom from './dom.js';
 import * as ui from './ui.js';
 import * as timer from './timer.js';
-import { initAudio, playSelectedSound } from './audio.js';
+import * as audio from './audio.js';
+
+function updateTaskEstimateMax() {
+    const maxPomodoros = state.settings.pomodorosPerCycle * state.settings.totalCycles;
+    dom.taskPomodoroEstimate.max = maxPomodoros;
+
+    if (parseInt(dom.taskPomodoroEstimate.value) > maxPomodoros) {
+        dom.taskPomodoroEstimate.value = maxPomodoros;
+    }
+}
 
 function requestNotificationPermission() {
     if ('Notification' in window && Notification.permission !== 'granted') {
@@ -28,6 +37,7 @@ function loadTasks() {
     ui.renderTasks();
 }
 
+
 function saveSettings() {
     const newSettings = {
         ...state.settings,
@@ -38,8 +48,18 @@ function saveSettings() {
         totalCycles: parseInt(dom.inputs.totalCycles.value),
         alarmSound: dom.alarmSoundSelect.value,
         autoStartBreaks: dom.autoStartBreaksSwitch.checked,
+        autoStartPomodoros: dom.autoStartPomodorosSwitch.checked,
+        browserNotificationsEnabled: dom.browserNotificationsSwitch.checked,
+        tickingSoundEnabled: dom.tickingSoundSwitch.checked,
+        strictTaskMode: dom.strictTaskModeSwitch.checked,
+        onTaskCompletedAction: dom.onTaskCompletedActionSelect.value,
+        alarmVolume: parseFloat(dom.alarmVolumeSlider.value),
+        ambientVolume: parseFloat(dom.ambientVolumeSlider.value)
     };
     state.setSettings(newSettings);
+    audio.updateAmbientVolume();
+    updateTaskEstimateMax();
+    ui.updateStartButtonState();
     localStorage.setItem('pomodoroSettings', JSON.stringify(state.settings));
     dom.settingsModal.hide();
     timer.resetApp();
@@ -48,7 +68,8 @@ function saveSettings() {
 function loadSettings() {
     const savedSettings = localStorage.getItem('pomodoroSettings');
     if (savedSettings) {
-        const newSettings = { ...state.settings, ...JSON.parse(savedSettings) };
+        const loaded = JSON.parse(savedSettings);
+        const newSettings = { ...state.settings, ...loaded };
         state.setSettings(newSettings);
     }
     dom.inputs.pomodoro.value = state.settings.pomodoro;
@@ -57,8 +78,16 @@ function loadSettings() {
     dom.inputs.pomodorosPerCycle.value = state.settings.pomodorosPerCycle;
     dom.inputs.totalCycles.value = state.settings.totalCycles;
     dom.alarmSoundSelect.value = state.settings.alarmSound;
-    dom.ambientSoundSelect.value = state.settings.ambientSound;
     dom.autoStartBreaksSwitch.checked = state.settings.autoStartBreaks;
+    dom.autoStartPomodorosSwitch.checked = state.settings.autoStartPomodoros;
+    dom.browserNotificationsSwitch.checked = state.settings.browserNotificationsEnabled;
+    dom.tickingSoundSwitch.checked = state.settings.tickingSoundEnabled;
+    dom.strictTaskModeSwitch.checked = state.settings.strictTaskMode;
+    dom.onTaskCompletedActionSelect.value = state.settings.onTaskCompletedAction;
+    dom.alarmVolumeSlider.value = state.settings.alarmVolume;
+    dom.ambientVolumeSlider.value = state.settings.ambientVolume;
+    
+    audio.updateAmbientVolume();
     dom.youtubePlayerContainer.classList.toggle('hidden', state.settings.ambientSound.startsWith('youtube_') === false);
 }
 
@@ -73,10 +102,16 @@ function handleKeyPress(e) {
 
 function init() {
     loadSettings();
+    updateTaskEstimateMax(); 
     loadTasks();
     ui.setupTheme();
+    ui.updateStartButtonState();
     
-    dom.startBtn.addEventListener('click', () => { initAudio(); requestNotificationPermission(); timer.startTimer(); });
+    dom.startBtn.addEventListener('click', () => { 
+        audio.initAudio(); 
+        requestNotificationPermission(); 
+        timer.startTimer(); 
+    });
     dom.pauseBtn.addEventListener('click', timer.pauseTimer);
     dom.stopBtn.addEventListener('click', timer.stopTimer);
     dom.nextBtn.addEventListener('click', timer.skipToNextMode);
@@ -90,6 +125,7 @@ function init() {
         state.setTasks(newTasks);
         saveTasks();
         ui.renderTasks();
+        ui.updateStartButtonState();
     });
 
     dom.ambientSoundSelect.addEventListener('change', () => {
@@ -97,7 +133,7 @@ function init() {
         state.setSettings(newSettings);
         localStorage.setItem('pomodoroSettings', JSON.stringify(state.settings));
         if (state.isRunning && state.currentMode === 'pomodoro') {
-            playSelectedSound(state.settings.ambientSound);
+            audio.playSelectedSound(state.settings.ambientSound);
         } else {
             dom.youtubePlayerContainer.classList.toggle('hidden', state.settings.ambientSound.startsWith('youtube_') === false);
         }
@@ -108,12 +144,29 @@ function init() {
     dom.taskForm.addEventListener('submit', (e) => {
         e.preventDefault(); 
         const text = dom.taskInput.value.trim();
+        const estimate = parseInt(dom.taskPomodoroEstimate.value) || 1;
+        
+        const maxPomodoros = state.settings.pomodorosPerCycle * state.settings.totalCycles;
+        if (estimate > maxPomodoros) {
+            alert(`A estimativa de Pomodoros (${estimate}) não pode ser maior que o total de ciclos configurado (${maxPomodoros}).`);
+            return;
+        }
+        
         if (text) {
-            const newTasks = [...state.tasks, { id: Date.now(), text, completed: false }];
+            const newTask = { 
+                id: Date.now(), 
+                text, 
+                completed: false,
+                pomodorosEst: estimate,
+                pomodorosDone: 0
+            };
+            const newTasks = [...state.tasks, newTask];
             state.setTasks(newTasks);
             dom.taskInput.value = '';
+            dom.taskPomodoroEstimate.value = 1;
             saveTasks();
             ui.renderTasks();
+            ui.updateStartButtonState();
         }
     });
 
@@ -122,13 +175,26 @@ function init() {
         if (!li) return;
         const id = parseInt(li.dataset.id);
 
-        if (e.target.type === 'checkbox') {
+        if (e.target.closest('.set-active-task-btn')) {
+            if (state.isRunning && state.currentMode === 'pomodoro') {
+                alert('Você não pode alterar a tarefa ativa durante uma sessão de foco. Pause o timer ou espere a próxima pausa.');
+                return;
+            }
+
+            state.setActiveTaskId(state.activeTaskId === id ? null : id);
+            ui.renderTasks();
+            ui.updateCounters();
+            ui.updateStartButtonState();
+
+        } else if (e.target.type === 'checkbox') {
             const newTasks = state.tasks.map(task => 
                 task.id === id ? { ...task, completed: e.target.checked } : task
             );
             state.setTasks(newTasks);
             saveTasks();
             ui.renderTasks();
+            ui.updateStartButtonState();
+
         } else if (e.target.closest('.delete-task-btn')) {
             li.classList.add('fading-out');
             setTimeout(() => {
@@ -136,6 +202,7 @@ function init() {
                 state.setTasks(newTasks);
                 saveTasks();
                 ui.renderTasks();
+                ui.updateStartButtonState();
             }, 300);
         }
     });
@@ -213,6 +280,39 @@ function init() {
             }
         }, { offset: Number.NEGATIVE_INFINITY }).element;
     }
+    
+    dom.startNextTaskBtn.addEventListener('click', () => {
+        timer.startNextTask();
+        saveTasks();
+        dom.taskCompletedModal.hide();
+        if (state.settings.autoStartPomodoros) {
+            timer.startTimer();
+        }
+    });
+
+    dom.returnToStandardBtn.addEventListener('click', () => {
+        timer.returnToStandardMode();
+        saveTasks();
+        dom.taskCompletedModal.hide();
+        if (state.settings.autoStartPomodoros) {
+            timer.startTimer();
+        }
+    });
+
+    dom.confirmRestartBtn.addEventListener('click', () => {
+        const activeTask = state.activeTaskId ? state.tasks.find(t => t.id === state.activeTaskId) : null;
+        if (activeTask) {
+            activeTask.pomodorosDone = 0;
+            activeTask.completed = false;
+            saveTasks();
+            ui.renderTasks();
+            ui.updateCounters();
+        }
+        dom.restartTaskModal.hide();
+        timer.proceedToStartTimer();
+    });
+    
+    dom.ambientVolumeSlider.addEventListener('input', audio.updateAmbientVolume);
     
     timer.switchMode('pomodoro');
     ui.updateCounters();
