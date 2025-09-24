@@ -18,7 +18,7 @@ export let settings = {
     longBreak: 15,
     pomodorosPerCycle: 4, 
     totalCycles: 1, 
-    alarmSound: 'notification',
+    alarmSound: 'none',
     ambientSound: 'none',
     autoStartBreaks: true,
     autoStartPomodoros: false,
