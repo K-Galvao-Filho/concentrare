@@ -1,4 +1,4 @@
-const CACHE_NAME = 'concentrare-v6'; // Aumentamos a versão para forçar a atualização do cache
+const CACHE_NAME = 'concentrare-v6.05'; // Aumentamos a versão para forçar a atualização do cache
 
 // Lista de arquivos locais para o funcionamento offline.
 const FILES_TO_CACHE = [
@@ -35,6 +35,7 @@ const FILES_TO_CACHE = [
     'assets/sounds/notification.mp3',
     'assets/sounds/digital.mp3',
     'assets/sounds/bell.mp3',
+    '/assets/sounds/tick-tock.mp3',
     // Sons de Ambiente
     'assets/sounds/ambient/tick-tock.mp3',
     'assets/sounds/ambient/gentle-rain.mp3',
@@ -44,6 +45,7 @@ const FILES_TO_CACHE = [
     'assets/sounds/ambient/beach.mp3',
     'assets/sounds/ambient/brown-noise.mp3',
     'assets/sounds/ambient/lo-fi.mp3'
+    
 ];
 
 self.addEventListener('install', (event) => {
