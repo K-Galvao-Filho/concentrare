@@ -75,9 +75,14 @@ self.addEventListener('fetch', (event) => {
     if (event.request.url.includes('youtube.com') || event.request.url.includes('googlevideo.com')) {
         return; // Ignora as requisições do YouTube, que precisam de rede
     }
+    
+    // --- LÓGICA ATUALIZADA AQUI ---
     event.respondWith(
-        caches.match(event.request).then((response) => {
+        // Adicionamos { ignoreSearch: true } para que a busca no cache ignore
+        // os parâmetros de URL (como o hash "?dd670306...")
+        caches.match(event.request, { ignoreSearch: true }).then((response) => {
             return response || fetch(event.request);
         })
     );
 });
+
