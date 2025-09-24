@@ -1,4 +1,4 @@
-const CACHE_NAME = 'concentrare-v6.055'; // Aumentamos a versão para forçar a atualização do cache
+const CACHE_NAME = 'concentrare-v6.056'; // Aumentamos a versão para forçar a atualização do cache
 
 // Lista de arquivos locais para o funcionamento offline.
 const FILES_TO_CACHE = [
