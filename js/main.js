@@ -91,6 +91,23 @@ function loadSettings() {
     dom.youtubePlayerContainer.classList.toggle('hidden', state.settings.ambientSound.startsWith('youtube_') === false);
 }
 
+function previewAlarmSound() {
+    const selectedSoundId = dom.alarmSoundSelect.value;
+    const selectedVolume = parseFloat(dom.alarmVolumeSlider.value);
+
+    // Se a opção for "Silencioso", não faz nada
+    if (selectedSoundId === 'none') {
+        return;
+    }
+
+    const alarmAudio = document.getElementById(selectedSoundId);
+    if (alarmAudio) {
+        alarmAudio.volume = selectedVolume;
+        alarmAudio.currentTime = 0; // Garante que o som toque desde o início
+        alarmAudio.play();
+    }
+}
+
 function handleKeyPress(e) {
     if (e.target.tagName === 'INPUT') return;
     if (e.code === 'Space') { e.preventDefault(); state.isRunning ? timer.pauseTimer() : timer.startTimer(); }
@@ -312,8 +329,12 @@ function init() {
         timer.proceedToStartTimer();
     });
     
-    dom.ambientVolumeSlider.addEventListener('input', audio.updateAmbientVolume);
-    
+    dom.alarmSoundSelect.addEventListener('change', previewAlarmSound);
+    dom.ambientVolumeSlider.addEventListener('input', audio.updateAmbientVolume); // Este já existe, o próximo é novo
+    dom.alarmVolumeSlider.addEventListener('input', previewAlarmSound);
+
+
+    timer.switchMode('pomodoro');
     timer.switchMode('pomodoro');
     ui.updateCounters();
 }

@@ -86,7 +86,7 @@ export function renderTasks() {
         
         li.innerHTML = `
             <input type="checkbox" ${task.completed ? 'checked' : ''}>
-            <span class="task-text ${task.completed ? 'completed' : ''}">${task.text}</span>
+            <span class="task-text ${task.completed ? 'completed' : ''}" title="${task.text}">${task.text}</span>
             <div class="task-controls">
                 <span class="task-pomodoro-count">${displayPomodorosDone} / ${task.pomodorosEst}</span>
                 <button class="set-active-task-btn" title="Marcar como tarefa ativa">
