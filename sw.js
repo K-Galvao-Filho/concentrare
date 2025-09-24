@@ -1,4 +1,4 @@
-const CACHE_NAME = 'concentrare-v6.05'; // Aumentamos a versão para forçar a atualização do cache
+const CACHE_NAME = 'concentrare-v6.055'; // Aumentamos a versão para forçar a atualização do cache
 
 // Lista de arquivos locais para o funcionamento offline.
 const FILES_TO_CACHE = [
@@ -11,19 +11,17 @@ const FILES_TO_CACHE = [
     'css/bootstrap-icons.min.css',
     'css/fonts.css',
     // Módulos JavaScript
-    'js/main.js',
     'js/audio.js',
+    'js/bootstrap.bundle.min.js',
     'js/dom.js',
+    'js/main.js',
     'js/state.js',
     'js/timer.js',
     'js/ui.js',
-    'js/bootstrap.bundle.min.js',
     // Ícones do PWA
     'assets/images/icon-192x192.png',
     'assets/images/icon-512x512.png',
     'assets/images/icon-maskable-512x512.png',
-    'assets/images/shortcut-focus.png',
-    'assets/images/shortcut-short-break.png',
     // Fontes
     'assets/fonts/bootstrap-icons.woff2',
     'assets/fonts/XRXV3I6Li01BKofIMeaBXso.woff2',
@@ -32,20 +30,19 @@ const FILES_TO_CACHE = [
     'assets/fonts/XRXV3I6Li01BKofIOOaBXso.woff2',
     'assets/fonts/XRXV3I6Li01BKofIOuaBXso.woff2',
     // Sons de Alarme
-    'assets/sounds/notification.mp3',
-    'assets/sounds/digital.mp3',
     'assets/sounds/bell.mp3',
+    'assets/sounds/digital.mp3',
+    'assets/sounds/notification.mp3',
     '/assets/sounds/tick-tock.mp3',
     // Sons de Ambiente
-    'assets/sounds/ambient/tick-tock.mp3',
-    'assets/sounds/ambient/gentle-rain.mp3',
-    'assets/sounds/ambient/heavy-rain.mp3',
-    'assets/sounds/ambient/night-forest.mp3',
-    'assets/sounds/ambient/library.mp3',
     'assets/sounds/ambient/beach.mp3',
     'assets/sounds/ambient/brown-noise.mp3',
-    'assets/sounds/ambient/lo-fi.mp3'
-    
+    'assets/sounds/ambient/gentle-rain.mp3',
+    'assets/sounds/ambient/heavy-rain.mp3',
+    'assets/sounds/ambient/library.mp3',
+    'assets/sounds/ambient/lo-fi.mp3',
+    'assets/sounds/ambient/night-forest.mp3',
+    'assets/sounds/ambient/tick-tock.mp3'
 ];
 
 self.addEventListener('install', (event) => {
